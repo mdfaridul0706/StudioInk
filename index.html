@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudioInk — Design Education for Serious Students</title>
+<meta name="description" content="Structured learning paths, expert-authored articles, and a community of 40,000+ designers. Typography, layout, color theory, brand identity and more.">
+<meta property="og:title" content="StudioInk — Design Education for Serious Students">
+<meta property="og:description" content="Where great design thinking takes shape. 2,400+ articles, 18 learning paths, 40k members.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+img{display:block;max-width:100%}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ── Design Tokens ────────────────────────────────── */
+:root{
+  --ink:#0d0c0a;
+  --ink2:#3d3b37;
+  --ink3:#7a7670;
+  --ink4:#b0ac a4;
+  --paper:#faf9f5;
+  --surface:#f3f1eb;
+  --surface2:#ede9e1;
+  --card:#ffffff;
+  --forest:#162518;
+  --forest2:#1f3421;
+  --forest3:#2a4530;
+  --moss:#4a7a50;
+  --sage:#8aab82;
+  --lime:#c8d882;
+  --terracotta:#c0492a;
+  --terracotta2:#a33c21;
+  --sand:#e8d8c0;
+  --border:#e0dcd4;
+  --border2:#ccc8be;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --r4:4px;--r6:6px;--r8:8px;--r12:12px;--r16:16px;--r20:20px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.12);
+  --transition:0.18s ease;
+}
+
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ── Page Router ──────────────────────────────────── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── Toast ────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:var(--forest);color:#fff;padding:11px 22px;border-radius:var(--r8);
+  font-size:13px;font-weight:500;z-index:1000;opacity:0;
+  transition:opacity 0.25s,transform 0.25s;pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Modal ────────────────────────────────────────── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(10,8,6,0.55);
+  z-index:500;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(2px);
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--card);border-radius:var(--r16);width:100%;max-width:420px;
+  padding:36px;position:relative;box-shadow:var(--shadow-lg);
+  animation:modalIn 0.22s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.modal-close{
+  position:absolute;top:14px;right:16px;background:none;border:none;
+  font-size:22px;cursor:pointer;color:var(--ink3);line-height:1;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;transition:background var(--transition);
+}
+.modal-close:hover{background:var(--surface)}
+.modal-title{font-family:var(--serif);font-size:28px;font-weight:700;margin-bottom:6px}
+.modal-sub{font-size:14px;color:var(--ink3);margin-bottom:28px;line-height:1.5}
+.form-field{margin-bottom:16px}
+.form-field label{display:block;font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em}
+.form-field input{
+  width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r6);
+  font-size:14px;background:var(--paper);color:var(--ink);
+  transition:border-color var(--transition);
+}
+.form-field input:focus{outline:none;border-color:var(--ink)}
+.form-field input::placeholder{color:var(--ink3)}
+.modal-divider{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:12px;color:var(--ink3)}
+.modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.switch-text{font-size:13px;color:var(--ink3);text-align:center;margin-top:16px}
+.switch-text a{color:var(--terracotta);cursor:pointer;font-weight:500}
+.switch-text a:hover{text-decoration:underline}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 20px;border-radius:var(--r6);font-size:13px;font-weight:500;
+  cursor:pointer;border:1.5px solid transparent;transition:all var(--transition);
+  line-height:1;white-space:nowrap;
+}
+.btn-primary{background:var(--terracotta);color:#fff;border-color:var(--terracotta)}
+.btn-primary:hover{background:var(--terracotta2);border-color:var(--terracotta2)}
+.btn-ghost{background:transparent;color:var(--ink2);border-color:var(--border)}
+.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+.btn-forest{background:var(--forest);color:#fff;border-color:var(--forest)}
+.btn-forest:hover{background:var(--forest2)}
+.btn-lime{background:var(--lime);color:var(--forest);border-color:var(--lime)}
+.btn-lime:hover{background:#d8e892}
+.btn-lg{padding:13px 28px;font-size:15px;border-radius:var(--r8)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-full{width:100%}
+
+/* ── Navigation ───────────────────────────────────── */
+#main-nav{
+  background:rgba(250,249,245,0.92);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+  backdrop-filter:saturate(180%) blur(12px);
+  -webkit-backdrop-filter:saturate(180%) blur(12px);
+}
+.nav-inner{
+  max-width:1280px;margin:0 auto;padding:0 28px;
+  display:flex;align-items:center;height:60px;gap:0;
+}
+.wordmark{
+  font-family:var(--serif);font-size:23px;font-weight:900;
+  color:var(--ink);letter-spacing:-0.5px;flex-shrink:0;cursor:pointer;
+}
+.wordmark em{color:var(--terracotta);font-style:normal}
+.nav-divider{width:1px;height:20px;background:var(--border);margin:0 24px}
+.nav-links{display:flex;gap:2px;flex:1}
+.nav-link{
+  font-size:13px;font-weight:500;color:var(--ink3);
+  padding:6px 12px;border-radius:var(--r6);cursor:pointer;
+  transition:all var(--transition);border:none;background:none;
+}
+.nav-link:hover,.nav-link.active{color:var(--ink);background:var(--surface)}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto}
+.nav-search-btn{
+  width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--ink3);font-size:15px;transition:all var(--transition);
+}
+.nav-search-btn:hover{border-color:var(--ink);color:var(--ink)}
+
+/* ── Hero ─────────────────────────────────────────── */
+.hero{
+  background:var(--forest);color:#fff;
+  padding:72px 28px 64px;overflow:hidden;position:relative;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(74,122,80,0.25) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:56px;align-items:center;position:relative}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--lime);font-weight:500;margin-bottom:20px;
+}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:var(--lime)}
+.hero-h1{
+  font-family:var(--serif);font-size:clamp(36px,5vw,60px);
+  line-height:1.1;margin-bottom:22px;font-weight:900;
+}
+.hero-h1 em{color:var(--lime);font-style:italic}
+.hero-lead{font-size:16px;color:#9ab89a;line-height:1.7;margin-bottom:36px;max-width:460px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.hero-stats{
+  display:flex;gap:36px;padding-top:32px;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+.stat-num{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1}
+.stat-label{font-size:11px;color:#6a8a6a;text-transform:uppercase;letter-spacing:0.09em;margin-top:4px}
+.hero-card-wrap{position:relative}
+.hero-card{
+  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+  border-radius:var(--r12);overflow:hidden;cursor:pointer;
+  transition:transform var(--transition),box-shadow var(--transition);
+}
+.hero-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,0.3)}
+.hero-card-img{
+  height:200px;background:linear-gradient(135deg,var(--forest2),#0d2010);
+  display:flex;align-items:center;justify-content:center;
+  font-size:56px;border-bottom:1px solid rgba(255,255,255,0.08);
+  position:relative;
+}
+.hero-card-badge{
+  position:absolute;top:12px;left:12px;
+  background:var(--lime);color:var(--forest);
+  font-size:10px;font-weight:500;padding:4px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:0.08em;
+}
+.hero-card-body{padding:20px}
+.hc-topic{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--lime);font-weight:500;margin-bottom:8px}
+.hc-title{font-family:var(--serif);font-size:19px;color:#fff;line-height:1.3;margin-bottom:12px;font-weight:700}
+.hc-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:#6a8a6a}
+.hc-avatar{width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--forest);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-card-float{
+  position:absolute;bottom:-16px;right:-16px;
+  background:var(--terracotta);color:#fff;border-radius:var(--r8);
+  padding:10px 14px;font-size:12px;font-weight:500;
+  box-shadow:var(--shadow-md);
+}
+.hero-card-float span{font-family:var(--serif);font-size:18px;font-weight:700;display:block}
+
+/* ── Topic Bar ────────────────────────────────────── */
+.topic-bar{background:var(--card);border-bottom:1px solid var(--border)}
+.topic-bar-inner{
+  max-width:1280px;margin:0 auto;padding:0 28px;
+  display:flex;gap:0;overflow-x:auto;
+  scrollbar-width:none;
+}
+.topic-bar-inner::-webkit-scrollbar{display:none}
+.topic-tab{
+  font-size:13px;font-weight:500;padding:16px 18px;
+  cursor:pointer;border:none;background:transparent;
+  color:var(--ink3);border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all var(--transition);
+}
+.topic-tab:hover{color:var(--ink)}
+.topic-tab.active{color:var(--terracotta);border-bottom-color:var(--terracotta)}
+
+/* ── Main Layout ──────────────────────────────────── */
+.main-layout{max-width:1280px;margin:0 auto;padding:48px 28px;display:grid;grid-template-columns:1fr 340px;gap:56px;align-items:start}
+
+/* ── Feed ─────────────────────────────────────────── */
+.feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.feed-heading{font-family:var(--serif);font-size:22px;font-weight:700}
+.sort-select{
+  font-size:13px;border:1.5px solid var(--border);background:var(--card);
+  padding:6px 12px;border-radius:var(--r6);color:var(--ink2);cursor:pointer;
+}
+.sort-select:focus{outline:none;border-color:var(--ink)}
+
+/* Featured Banner */
+.featured-banner{
+  background:var(--terracotta);color:#fff;border-radius:var(--r12);
+  padding:28px 28px;margin-bottom:32px;cursor:pointer;
+  transition:transform var(--transition),box-shadow var(--transition);
+  position:relative;overflow:hidden;
+}
+.featured-banner::after{
+  content:'✦';position:absolute;right:28px;top:50%;transform:translateY(-50%);
+  font-size:64px;opacity:0.12;line-height:1;
+}
+.featured-banner:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.fb-label{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:10px;font-weight:500}
+.fb-title{font-family:var(--serif);font-size:22px;font-weight:700;font-style:italic;margin-bottom:8px;line-height:1.3}
+.fb-text{font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;margin-bottom:16px;max-width:480px}
+.fb-cta{font-size:13px;color:#fff;font-weight:500;border-bottom:1px solid rgba(255,255,255,0.4);padding-bottom:2px;display:inline}
+
+/* Article Cards */
+.article-list{display:flex;flex-direction:column;gap:0}
+.article-card{
+  display:grid;grid-template-columns:192px 1fr;gap:24px;
+  padding:28px 0;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:opacity var(--transition);
+}
+.article-card:hover .art-title{color:var(--terracotta)}
+.art-thumb{
+  border-radius:var(--r8);overflow:hidden;
+  height:128px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;transition:transform 0.3s ease;
+}
+.article-card:hover .art-thumb{transform:scale(1.03)}
+.th-warm{background:#f5ece0}
+.th-cool{background:#e4edf5}
+.th-violet{background:#ede8f5}
+.th-green{background:#e4f0e4}
+.th-rose{background:#f5e8e4}
+.th-gold{background:#f5f0e0}
+.art-meta-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.badge{
+  font-size:10px;text-transform:uppercase;letter-spacing:0.08em;
+  padding:3px 9px;border-radius:var(--r20);font-weight:500;
+}
+.badge-typography{background:#fdeee6;color:#a03820}
+.badge-layout{background:#e4f0e4;color:#1a5a1a}
+.badge-color{background:#ede8f5;color:#5a1a8a}
+.badge-ux{background:#e4edf5;color:#1a3a7a}
+.badge-branding{background:#f5f0e0;color:#7a5a00}
+.badge-process{background:#f0f0ec;color:#3a3a34}
+.badge-tools{background:#e4f5f0;color:#005a4a}
+.badge-new{background:var(--lime);color:var(--forest)}
+.art-date{font-size:12px;color:var(--ink3)}
+.art-title{
+  font-family:var(--serif);font-size:19px;line-height:1.35;
+  margin-bottom:8px;color:var(--ink);font-weight:700;
+  transition:color var(--transition);
+}
+.art-excerpt{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.art-footer{display:flex;align-items:center;gap:12px}
+.author-chip{display:flex;align-items:center;gap:8px;flex:1}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.av-mk{background:#c8d882;color:#1a3a10}
+.av-jr{background:#f4c8a0;color:#6a2a00}
+.av-sn{background:#c4d0f4;color:#1a2a7a}
+.av-db{background:#f4c8d0;color:#6a1a2a}
+.av-lw{background:#c8f0d8;color:#0a4a1a}
+.av-ak{background:#f0d8c8;color:#4a2a00}
+.author-name{font-size:12px;color:var(--ink2);font-weight:500}
+.art-reads{font-size:12px;color:var(--ink3)}
+.art-actions{display:flex;gap:4px;margin-left:auto}
+.act-btn{
+  background:none;border:none;cursor:pointer;
+  font-size:12px;color:var(--ink3);
+  display:flex;align-items:center;gap:4px;
+  padding:5px 9px;border-radius:var(--r6);transition:all var(--transition);
+}
+.act-btn:hover{background:var(--surface);color:var(--ink)}
+.act-btn.liked{color:var(--terracotta)}
+
+.load-more-wrap{text-align:center;padding:36px 0;border-top:1px solid var(--border)}
+
+/* ── Sidebar ──────────────────────────────────────── */
+.sidebar{display:flex;flex-direction:column;gap:32px}
+.widget{background:var(--card);border:1px solid var(--border);border-radius:var(--r12);padding:20px}
+.widget-title{font-size:10px;text-transform:uppercase;letter-spacing:0.13em;font-weight:500;color:var(--ink3);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+
+/* Search */
+.search-wrap{position:relative}
+.search-wrap input{
+  width:100%;padding:10px 38px 10px 14px;
+  border:1.5px solid var(--border);border-radius:var(--r8);
+  font-size:14px;background:var(--paper);color:var(--ink);
+  transition:border-color var(--transition);
+}
+.search-wrap input:focus{outline:none;border-color:var(--ink)}
+.search-wrap input::placeholder{color:var(--ink3)}
+.search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ink3);font-size:16px;pointer-events:none}
+
+/* Category Pills */
+.pill-cloud{display:flex;flex-wrap:wrap;gap:8px}
+.pill{
+  font-size:12px;padding:6px 13px;border-radius:20px;
+  border:1.5px solid var(--border);cursor:pointer;color:var(--ink2);
+  transition:all var(--transition);font-weight:400;
+}
+.pill:hover,.pill.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* Trending */
+.trending-list{display:flex;flex-direction:column;gap:0}
+.trend-item{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}
+.trend-item:last-child{border-bottom:none;padding-bottom:0}
+.trend-n{font-family:var(--serif);font-size:24px;color:var(--border2);font-weight:700;min-width:26px;line-height:1;flex-shrink:0}
+.trend-title{font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;line-height:1.4;margin-bottom:3px}
+.trend-title:hover{color:var(--terracotta)}
+.trend-meta{font-size:11px;color:var(--ink3)}
+
+/* Learning Paths widget */
+.lp-list{display:flex;flex-direction:column;gap:10px}
+.lp-item{
+  background:var(--surface);border-radius:var(--r8);padding:13px 14px;
+  cursor:pointer;border:1.5px solid transparent;
+  transition:all var(--transition);
+}
+.lp-item:hover{background:var(--card);border-color:var(--border)}
+.lp-icon{font-size:18px;margin-bottom:6px}
+.lp-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.lp-sub{font-size:11px;color:var(--ink3)}
+.lp-bar{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+.lp-fill{height:100%;background:var(--terracotta);border-radius:2px;transition:width 0.4s ease}
+
+/* Writers */
+.writers-list{display:flex;flex-direction:column;gap:12px}
+.writer-row{display:flex;align-items:center;gap:10px}
+.writer-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.writer-name{font-size:13px;font-weight:500;color:var(--ink)}
+.writer-role{font-size:11px;color:var(--ink3);margin-top:1px}
+.writer-info{flex:1}
+.follow-btn{
+  font-size:11px;padding:5px 12px;border-radius:var(--r20);
+  border:1.5px solid var(--border);background:transparent;
+  cursor:pointer;color:var(--ink2);font-weight:500;
+  transition:all var(--transition);white-space:nowrap;
+}
+.follow-btn:hover,.follow-btn.following{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* Newsletter */
+.newsletter-widget{background:var(--forest);border-radius:var(--r12);padding:22px;color:#fff}
+.nl-title{font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:6px}
+.nl-desc{font-size:13px;color:#7a9a76;line-height:1.55;margin-bottom:16px}
+.nl-input{
+  width:100%;padding:10px 13px;border:1.5px solid rgba(255,255,255,0.15);
+  border-radius:var(--r6);background:rgba(255,255,255,0.07);
+  color:#fff;font-size:13px;margin-bottom:10px;
+  transition:border-color var(--transition);
+}
+.nl-input:focus{outline:none;border-color:rgba(255,255,255,0.4)}
+.nl-input::placeholder{color:rgba(255,255,255,0.35)}
+
+/* ── Article Reader ────────────────────────────────── */
+#page-article{background:var(--paper)}
+.reader-nav{
+  background:rgba(250,249,245,0.92);border-bottom:1px solid var(--border);
+  padding:0 28px;position:sticky;top:0;z-index:200;
+  backdrop-filter:saturate(180%) blur(12px);
+}
+.reader-nav-inner{
+  max-width:800px;margin:0 auto;height:56px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.back-btn{
+  background:none;border:none;cursor:pointer;font-size:13px;color:var(--ink3);
+  display:flex;align-items:center;gap:6px;transition:color var(--transition);padding:0;
+}
+.back-btn:hover{color:var(--ink)}
+.reader-actions{display:flex;gap:8px;align-items:center}
+.reader-share-btn{
+  font-size:12px;padding:6px 14px;border:1.5px solid var(--border);
+  border-radius:var(--r20);background:transparent;cursor:pointer;
+  color:var(--ink2);transition:all var(--transition);font-weight:500;
+}
+.reader-share-btn:hover{border-color:var(--ink);color:var(--ink)}
+.progress-bar{height:3px;background:var(--border);position:relative}
+.progress-fill{height:100%;background:var(--terracotta);width:0%;transition:width 0.1s linear}
+
+.article-reader{max-width:720px;margin:0 auto;padding:48px 28px 80px}
+.reader-category{font-size:11px;text-transform:uppercase;letter-spacing:0.13em;color:var(--terracotta);font-weight:500;margin-bottom:14px}
+.reader-title{font-family:var(--serif);font-size:clamp(30px,5vw,48px);line-height:1.15;margin-bottom:24px;font-weight:900}
+.reader-author-bar{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  margin-bottom:36px;
+}
+.reader-author-info{flex:1}
+.reader-author-name{font-size:14px;font-weight:500}
+.reader-author-bio{font-size:12px;color:var(--ink3)}
+.reader-hero{
+  height:380px;border-radius:var(--r12);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:80px;margin-bottom:36px;
+}
+.rh-warm{background:linear-gradient(135deg,#f5ece0,#edd8c0)}
+.rh-cool{background:linear-gradient(135deg,#e4edf5,#d0e0f0)}
+.rh-violet{background:linear-gradient(135deg,#ede8f5,#d8d0f0)}
+.rh-green{background:linear-gradient(135deg,#e4f0e4,#c8e0c8)}
+.rh-rose{background:linear-gradient(135deg,#f5e8e4,#f0d0c8)}
+.rh-gold{background:linear-gradient(135deg,#f5f0e0,#ede0c0)}
+
+.article-body{font-size:17px;line-height:1.85;color:var(--ink2)}
+.article-body h2{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--ink);margin:44px 0 18px;line-height:1.25}
+.article-body h3{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--ink);margin:32px 0 14px}
+.article-body p{margin-bottom:22px}
+.article-body p:last-child{margin-bottom:0}
+.article-body blockquote{
+  border-left:3px solid var(--terracotta);padding:8px 24px;
+  margin:32px 0;color:var(--ink);
+}
+.article-body blockquote p{font-family:var(--serif);font-size:22px;font-style:italic;margin:0;line-height:1.5}
+.article-body ul,.article-body ol{margin:0 0 22px 24px}
+.article-body li{margin-bottom:8px;line-height:1.65}
+.article-body code{font-family:var(--mono);font-size:14px;background:var(--surface);padding:2px 7px;border-radius:var(--r4);color:var(--terracotta)}
+.article-body .callout{background:var(--surface);border-radius:var(--r8);padding:20px 24px;margin:28px 0;border-left:3px solid var(--lime)}
+.article-body .callout p{margin:0;font-size:15px;color:var(--ink)}
+
+.article-tags{display:flex;gap:8px;flex-wrap:wrap;padding:28px 0;border-top:1px solid var(--border);margin-top:36px}
+.article-reactions{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:22px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  margin-bottom:40px;
+}
+.react-btn{
+  display:flex;align-items:center;gap:7px;padding:9px 18px;
+  border:1.5px solid var(--border);border-radius:var(--r20);
+  cursor:pointer;font-size:13px;font-weight:500;background:transparent;
+  transition:all var(--transition);
+}
+.react-btn:hover{background:var(--surface)}
+.react-btn.active{background:#fdeee6;border-color:#f0b090;color:var(--terracotta)}
+
+/* Comments */
+.comments-section{}
+.comments-heading{font-family:var(--serif);font-size:26px;font-weight:700;margin-bottom:24px}
+.comment-form{background:var(--surface);border-radius:var(--r12);padding:20px;margin-bottom:32px}
+.comment-form textarea{
+  width:100%;padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:var(--r8);font-size:14px;resize:vertical;
+  min-height:88px;background:var(--card);color:var(--ink);line-height:1.6;
+}
+.comment-form textarea:focus{outline:none;border-color:var(--ink)}
+.cf-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.comments-list{display:flex;flex-direction:column;gap:20px}
+.comment-item{display:grid;grid-template-columns:38px 1fr;gap:13px}
+.comment-bubble{background:var(--card);border:1px solid var(--border);border-radius:var(--r12);padding:16px 18px}
+.comment-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.comment-author{font-size:13px;font-weight:500}
+.comment-time{font-size:12px;color:var(--ink3)}
+.comment-text{font-size:14px;line-height:1.65;color:var(--ink2)}
+.comment-acts{display:flex;gap:12px;margin-top:10px}
+.comment-act{font-size:12px;color:var(--ink3);background:none;border:none;cursor:pointer;padding:0;transition:color var(--transition)}
+.comment-act:hover{color:var(--ink)}
+
+/* ── Learning Paths Page ───────────────────────────── */
+.paths-hero{background:var(--forest2);color:#fff;padding:64px 28px 56px}
+.paths-hero-inner{max-width:1280px;margin:0 auto}
+.paths-eyebrow{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--lime);font-weight:500;margin-bottom:12px}
+.paths-h1{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:900;margin-bottom:14px}
+.paths-lead{font-size:16px;color:#7a9a76;max-width:500px;line-height:1.65}
+.paths-grid{max-width:1280px;margin:0 auto;padding:48px 28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+.path-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r12);overflow:hidden;cursor:pointer;
+  transition:transform var(--transition),box-shadow var(--transition);
+}
+.path-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.path-cover{height:148px;display:flex;align-items:center;justify-content:center;font-size:52px}
+.pc-forest{background:linear-gradient(135deg,#162518,#1f3421)}
+.pc-rose{background:linear-gradient(135deg,#3a1018,#5a1828)}
+.pc-navy{background:linear-gradient(135deg,#101838,#182450)}
+.pc-soil{background:linear-gradient(135deg,#3a2810,#5a3c18)}
+.pc-teal{background:linear-gradient(135deg,#103a3a,#185858)}
+.pc-plum{background:linear-gradient(135deg,#2a1038,#401858)}
+.path-body{padding:22px}
+.path-level{display:inline-block;margin-bottom:10px}
+.path-name{font-family:var(--serif);font-size:21px;font-weight:700;margin-bottom:8px}
+.path-desc{font-size:13px;color:var(--ink3);line-height:1.6;margin-bottom:18px}
+.path-stats{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:14px}
+.path-coming{
+  background:var(--surface);border:2px dashed var(--border);
+  border-radius:var(--r12);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:48px 28px;
+  text-align:center;min-height:320px;cursor:pointer;
+  transition:all var(--transition);
+}
+.path-coming:hover{background:var(--card);border-color:var(--border2)}
+.path-coming-icon{font-size:32px;opacity:0.3;margin-bottom:12px}
+.path-coming p{font-size:14px;font-weight:500;color:var(--ink3)}
+.path-coming small{font-size:12px;color:var(--ink3);margin-top:4px}
+
+/* ── Community Page ────────────────────────────────── */
+.community-hero{background:var(--terracotta);color:#fff;padding:64px 28px}
+.community-inner{max-width:1280px;margin:0 auto}
+.community-grid{max-width:1280px;margin:0 auto;padding:48px 28px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.community-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r12);padding:24px}
+
+/* ── CMS / Write Page ──────────────────────────────── */
+.write-page{max-width:800px;margin:0 auto;padding:48px 28px}
+.write-header{margin-bottom:36px}
+.write-title-input{
+  width:100%;font-family:var(--serif);font-size:36px;font-weight:700;
+  border:none;background:transparent;color:var(--ink);outline:none;
+  line-height:1.2;margin-bottom:16px;
+}
+.write-title-input::placeholder{color:var(--border2)}
+.write-subtitle-input{
+  width:100%;font-size:18px;border:none;background:transparent;
+  color:var(--ink3);outline:none;line-height:1.5;
+}
+.write-subtitle-input::placeholder{color:var(--border)}
+.write-toolbar{
+  display:flex;gap:4px;padding:12px 0;border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);margin-bottom:24px;flex-wrap:wrap;
+}
+.toolbar-btn{
+  background:none;border:none;cursor:pointer;font-size:13px;
+  padding:6px 10px;border-radius:var(--r6);color:var(--ink2);
+  font-weight:500;transition:all var(--transition);
+}
+.toolbar-btn:hover{background:var(--surface);color:var(--ink)}
+.toolbar-sep{width:1px;height:24px;background:var(--border);margin:0 4px;align-self:center}
+.write-body{
+  width:100%;min-height:400px;font-size:17px;line-height:1.85;
+  border:none;background:transparent;color:var(--ink2);outline:none;
+  resize:none;
+}
+.write-body::placeholder{color:var(--border2)}
+.write-sidebar{
+  background:var(--surface);border-radius:var(--r12);padding:20px;
+  margin-top:24px;
+}
+.write-sidebar h4{font-size:12px;font-weight:500;color:var(--ink2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px}
+.meta-field{margin-bottom:14px}
+.meta-field label{font-size:11px;color:var(--ink3);display:block;margin-bottom:5px}
+.meta-field select,.meta-field input{
+  width:100%;padding:8px 10px;border:1.5px solid var(--border);
+  border-radius:var(--r6);font-size:13px;background:var(--card);color:var(--ink);
+}
+.meta-field select:focus,.meta-field input:focus{outline:none;border-color:var(--ink)}
+
+/* ── Search Overlay ────────────────────────────────── */
+.search-overlay{
+  display:none;position:fixed;inset:0;background:rgba(10,8,6,0.6);
+  z-index:600;align-items:flex-start;justify-content:center;
+  padding-top:80px;
+}
+.search-overlay.open{display:flex}
+.search-modal{
+  background:var(--card);border-radius:var(--r16);width:100%;max-width:640px;
+  margin:0 20px;overflow:hidden;box-shadow:var(--shadow-lg);
+  animation:modalIn 0.2s ease;
+}
+.search-input-wrap{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.search-big{
+  flex:1;font-size:18px;border:none;background:transparent;color:var(--ink);outline:none;
+}
+.search-big::placeholder{color:var(--ink3)}
+.search-results{padding:16px 0;max-height:380px;overflow-y:auto}
+.search-result-item{
+  padding:12px 20px;cursor:pointer;transition:background var(--transition);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.search-result-item:hover{background:var(--surface)}
+.sr-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.sr-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.sr-meta{font-size:12px;color:var(--ink3)}
+.search-empty{padding:32px 20px;text-align:center;color:var(--ink3);font-size:14px}
+
+/* ── Footer ───────────────────────────────────────── */
+.site-footer{background:var(--forest);color:#fff;padding:56px 28px 28px;margin-top:80px}
+.footer-inner{max-width:1280px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-brand .wordmark{color:#fff;cursor:pointer}
+.footer-brand .wordmark em{color:var(--lime)}
+.footer-tagline{font-size:14px;color:#5a7a5a;margin-top:14px;line-height:1.65;max-width:240px}
+.footer-social{display:flex;gap:10px;margin-top:20px}
+.social-btn{
+  width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);
+  background:transparent;cursor:pointer;color:rgba(255,255,255,0.5);
+  font-size:13px;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);
+}
+.social-btn:hover{border-color:rgba(255,255,255,0.5);color:#fff}
+.footer-col h4{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#5a7a5a;margin-bottom:16px;font-weight:500}
+.footer-col a{display:block;font-size:14px;color:#7a9a76;margin-bottom:10px;cursor:pointer;transition:color var(--transition)}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-bottom p{font-size:12px;color:#4a6a4a}
+
+/* ── Responsive ───────────────────────────────────── */
+@media(max-width:1024px){
+  .main-layout{grid-template-columns:1fr;gap:0}
+  .sidebar{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-card-wrap{display:none}
+  .hero-h1{font-size:36px}
+  .nav-links{display:none}
+  .article-card{grid-template-columns:1fr}
+  .art-thumb{height:160px;width:100%}
+  .community-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .article-reader{padding:32px 20px 60px}
+}
+@media(max-width:480px){
+  .nav-inner{padding:0 16px}
+  .hero{padding:48px 16px 40px}
+  .main-layout{padding:28px 16px}
+  .topic-bar-inner{padding:0 16px}
+  .reader-nav,.reader-nav-inner{padding-left:16px;padding-right:16px}
+}
+
+/* ── Animations ───────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeUp 0.4s ease forwards}
+.delay-1{animation-delay:0.05s}
+.delay-2{animation-delay:0.1s}
+.delay-3{animation-delay:0.15s}
+</style>
+<script>
+window.STUDIOINK_CONTENT = {
+  "articles": [
+    {
+      "id": 1775768787104,
+      "title": "Test",
+      "excerpt": "Test",
+      "body": "Test",
+      "category": "typography",
+      "author": "Maya Kim",
+      "date": "2026-04-09",
+      "status": "published",
+      "reads": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [],
+      "seoTitle": "",
+      "seoDesc": "",
+      "readTime": "5 min"
+    },
+    {
+      "id": 1,
+      "title": "Hierarchy without size: weight, space, and restraint",
+      "excerpt": "Every student reaches for a larger font. Here's how professionals do it differently.",
+      "category": "typography",
+      "author": "Maya Kim",
+      "status": "published",
+      "reads": 740,
+      "likes": 64,
+      "comments": 9,
+      "date": "2026-04-02",
+      "tags": [
+        "Typography",
+        "Hierarchy"
+      ],
+      "seoTitle": "",
+      "seoDec": "",
+      "body": ""
+    },
+    {
+      "id": 2,
+      "title": "Why your color palette keeps failing in production",
+      "excerpt": "Palettes that look beautiful in Figma collapse in code. The culprit is almost always context.",
+      "category": "color",
+      "author": "James Reyes",
+      "status": "published",
+      "reads": 980,
+      "likes": 112,
+      "comments": 21,
+      "date": "2026-03-28",
+      "tags": [
+        "Color",
+        "Production"
+      ],
+      "seoTitle": "",
+      "seoDec": "",
+      "body": ""
+    },
+    {
+      "id": 3,
+      "title": "The mark without meaning: why logomarks fail",
+      "excerpt": "Clever logomarks are everywhere. Memorable ones are rare.",
+      "category": "branding",
+      "author": "James Reyes",
+      "status": "published",
+      "reads": 620,
+      "likes": 55,
+      "comments": 7,
+      "date": "2026-03-25",
+      "tags": [
+        "Branding",
+        "Logo"
+      ],
+      "seoTitle": "",
+      "seoDec": "",
+      "body": ""
+    },
+    {
+      "id": 4,
+      "title": "Negative space is not empty space",
+      "excerpt": "The space between elements is as active as the elements themselves.",
+      "category": "layout",
+      "author": "Sara Naomi",
+      "status": "published",
+      "reads": 820,
+      "likes": 97,
+      "comments": 18,
+      "date": "2026-03-20",
+      "tags": [
+        "Layout",
+        "Composition"
+      ],
+      "seoTitle": "",
+      "seoDec": "",
+      "body": ""
+    },
+    {
+      "id": 5,
+      "title": "Design critique: how to give feedback that builds",
+      "excerpt": "Critique is a skill. Most designers were never taught it.",
+      "category": "ux",
+      "author": "Sara Naomi",
+      "status": "published",
+      "reads": 560,
+      "likes": 73,
+      "comments": 24,
+      "date": "2026-03-15",
+      "tags": [
+        "Process",
+        "Critique"
+      ],
+      "seoTitle": "",
+      "seoDec": "",
+      "body": ""
+    },
+    {
+      "id": 6,
+      "title": "Figma variables: what they mean for design systems",
+      "excerpt": "Variables in Figma represent a fundamental shift in design systems.",
+      "category": "tools",
+      "author": "David Burns",
+      "status": "published",
+      "reads": 0,
+      "likes": 0,
+      "comments": 0,
+      "date": "2026-04-08",
+      "tags": [
+        "Figma",
+        "Design Systems"
+      ],
+      "seoTitle": "",
+      "seoDec": "",
+      "body": ""
+    }
+  ],
+  "paths": [
+    {
+      "id": 0,
+      "name": "Typography Fundamentals",
+      "level": "Beginner",
+      "articles": 12,
+      "enrolled": 1840,
+      "status": "active",
+      "desc": "Master the core principles of type."
+    },
+    {
+      "id": 1,
+      "name": "Grid Systems Mastery",
+      "level": "Intermediate",
+      "articles": 9,
+      "enrolled": 1240,
+      "status": "active",
+      "desc": "From baseline to modular grids."
+    },
+    {
+      "id": 2,
+      "name": "Color Theory in Practice",
+      "level": "All levels",
+      "articles": 11,
+      "enrolled": 2100,
+      "status": "active",
+      "desc": "How color communicates and fails."
+    },
+    {
+      "id": 3,
+      "name": "Brand Identity Design",
+      "level": "Intermediate",
+      "articles": 15,
+      "enrolled": 980,
+      "status": "active",
+      "desc": "Build identities that endure."
+    },
+    {
+      "id": 4,
+      "name": "UX Writing & Hierarchy",
+      "level": "Beginner",
+      "articles": 8,
+      "enrolled": 760,
+      "status": "active",
+      "desc": "Words are design."
+    },
+    {
+      "id": 5,
+      "name": "Design Systems at Scale",
+      "level": "Advanced",
+      "articles": 14,
+      "enrolled": 640,
+      "status": "draft",
+      "desc": "Token architecture and governance."
+    }
+  ],
+  "generatedAt": "2026-04-09T21:06:27.517Z",
+  "articleCount": 7
+};
+</script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     TOAST
+═══════════════════════════════════════════════════ -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     SEARCH OVERLAY
+═══════════════════════════════════════════════════ -->
+<div class="search-overlay" id="search-overlay" onclick="closeSearchIfBg(event)">
+  <div class="search-modal">
+    <div class="search-input-wrap">
+      <span style="font-size:18px;color:var(--ink3)">⌕</span>
+      <input class="search-big" type="text" placeholder="Search articles, topics, authors…" id="search-big-input" oninput="runSearch(this.value)">
+      <button onclick="closeSearch()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink3)">×</button>
+    </div>
+    <div class="search-results" id="search-results">
+      <div class="search-empty">Start typing to search 2,400+ articles</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     AUTH MODAL
+═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalIfBg(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: HOME
+═══════════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- Nav -->
+  <nav id="main-nav">
+    <div class="nav-inner">
+      <div class="wordmark" onclick="showPage('home')">Studio<em>Ink</em></div>
+      <div class="nav-divider"></div>
+      <div class="nav-links">
+        <button class="nav-link active" onclick="filterCat('all',this)">All</button>
+        <button class="nav-link" onclick="filterCat('typography',this)">Typography</button>
+        <button class="nav-link" onclick="filterCat('layout',this)">Layout</button>
+        <button class="nav-link" onclick="filterCat('color',this)">Color Theory</button>
+        <button class="nav-link" onclick="filterCat('ux',this)">UX & Process</button>
+        <button class="nav-link" onclick="filterCat('branding',this)">Branding</button>
+        <button class="nav-link" onclick="showPage('paths')">Learning Paths</button>
+      </div>
+      <div class="nav-right">
+        <button class="nav-search-btn" onclick="openSearch()" title="Search">⌕</button>
+        <button class="btn btn-ghost btn-sm" onclick="openModal('login')">Sign in</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('register')">Join free</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="animate-in">
+        <div class="hero-eyebrow">For design students &amp; professionals</div>
+        <h1 class="hero-h1">Where great<br>design <em>thinking</em><br>takes shape</h1>
+        <p class="hero-lead">Structured learning paths, expert-authored articles, and a community of 40,000 designers committed to pushing craft forward — from letterforms to living systems.</p>
+        <div class="hero-actions">
+          <button class="btn btn-lime btn-lg" onclick="openModal('register')">Start learning free</button>
+          <button class="btn btn-lg" style="background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2)" onclick="document.getElementById('feed').scrollIntoView({behavior:'smooth'})">Browse articles ↓</button>
+        </div>
+        <div class="hero-stats">
+          <div><div class="stat-num">2,400+</div><div class="stat-label">Articles</div></div>
+          <div><div class="stat-num">40k</div><div class="stat-label">Members</div></div>
+          <div><div class="stat-num">18</div><div class="stat-label">Learning paths</div></div>
+          <div><div class="stat-num">120+</div><div class="stat-label">Writers</div></div>
+        </div>
+      </div>
+      <div class="hero-card-wrap animate-in delay-2">
+        <div class="hero-card" onclick="openArticle(0)">
+          <div class="hero-card-img">
+            <div class="hero-card-badge">Editor's Pick</div>
+            <span>✦</span>
+          </div>
+          <div class="hero-card-body">
+            <div class="hc-topic">Typography · 8 min read</div>
+            <div class="hc-title">The invisible grid: how leading shapes reading</div>
+            <div class="hc-meta">
+              <div class="hc-avatar">MK</div>
+              <span>Maya Kim</span>
+              <span>·</span>
+              <span>1,240 reads</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-card-float">
+          <span>↑ 24%</span>
+          readers this week
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Topic Tabs -->
+  <div class="topic-bar">
+    <div class="topic-bar-inner" id="topic-tabs">
+      <button class="topic-tab active" onclick="filterTab('all',this)">All articles</button>
+      <button class="topic-tab" onclick="filterTab('typography',this)">Typography</button>
+      <button class="topic-tab" onclick="filterTab('layout',this)">Layout &amp; Grid</button>
+      <button class="topic-tab" onclick="filterTab('color',this)">Color Theory</button>
+      <button class="topic-tab" onclick="filterTab('ux',this)">UX &amp; Process</button>
+      <button class="topic-tab" onclick="filterTab('branding',this)">Branding</button>
+      <button class="topic-tab" onclick="filterTab('tools',this)">Tools</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-layout" id="feed">
+    <!-- Feed -->
+    <div>
+      <!-- Featured Banner -->
+      <div class="featured-banner" onclick="openArticle(0)" id="featured-banner">
+        <div class="fb-label">✦ Featured series this week</div>
+        <div class="fb-title">"Type is not decoration — it's the message."</div>
+        <div class="fb-text">A deep-dive into why the best designers obsess over letterforms, not just layouts. Starting with the fundamentals of optical sizing and leading.</div>
+        <span class="fb-cta">Read the series →</span>
+      </div>
+
+      <div class="feed-header">
+        <h2 class="feed-heading" id="feed-heading">Latest articles</h2>
+        <select class="sort-select" onchange="sortArticles(this.value)">
+          <option value="newest">Newest first</option>
+          <option value="popular">Most popular</option>
+          <option value="liked">Most liked</option>
+        </select>
+      </div>
+
+      <div class="article-list" id="article-list"></div>
+
+      <div class="load-more-wrap">
+        <button class="btn btn-ghost" style="padding:11px 32px;font-size:14px" onclick="toast('All articles loaded — you\'ve read everything! 🎉')">Load more articles</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+      <!-- Search -->
+      <div class="widget">
+        <div class="widget-title">Search</div>
+        <div class="search-wrap">
+          <input type="text" placeholder="Search articles, topics…" oninput="runSearch(this.value,true)" onfocus="openSearch()">
+          <span class="search-icon">⌕</span>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="widget">
+        <div class="widget-title">Browse by topic</div>
+        <div class="pill-cloud" id="pill-cloud">
+          <span class="pill active" onclick="filterPill(this,'all')">All</span>
+          <span class="pill" onclick="filterPill(this,'typography')">Typography</span>
+          <span class="pill" onclick="filterPill(this,'layout')">Layout</span>
+          <span class="pill" onclick="filterPill(this,'color')">Color Theory</span>
+          <span class="pill" onclick="filterPill(this,'ux')">UX &amp; Process</span>
+          <span class="pill" onclick="filterPill(this,'branding')">Branding</span>
+          <span class="pill" onclick="filterPill(this,'tools')">Tools</span>
+          <span class="pill" onclick="filterPill(this,'process')">Process</span>
+        </div>
+      </div>
+
+      <!-- Learning Paths -->
+      <div class="widget">
+        <div class="widget-title">Learning paths</div>
+        <div class="lp-list">
+          <div class="lp-item" onclick="showPage('paths')">
+            <div class="lp-icon">✦</div>
+            <div class="lp-name">Typography Fundamentals</div>
+            <div class="lp-sub">12 articles · Beginner · ~4 hrs</div>
+            <div class="lp-bar"><div class="lp-fill" style="width:65%"></div></div>
+          </div>
+          <div class="lp-item" onclick="showPage('paths')">
+            <div class="lp-icon">▦</div>
+            <div class="lp-name">Grid Systems Mastery</div>
+            <div class="lp-sub">9 articles · Intermediate · ~3 hrs</div>
+            <div class="lp-bar"><div class="lp-fill" style="width:30%"></div></div>
+          </div>
+          <div class="lp-item" onclick="showPage('paths')">
+            <div class="lp-icon">◉</div>
+            <div class="lp-name">Color Theory in Practice</div>
+            <div class="lp-sub">11 articles · All levels · ~3.5 hrs</div>
+            <div class="lp-bar"><div class="lp-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <button class="btn btn-ghost btn-sm btn-full" onclick="showPage('paths')">View all 18 paths →</button>
+        </div>
+      </div>
+
+      <!-- Trending -->
+      <div class="widget">
+        <div class="widget-title">Trending this week</div>
+        <div class="trending-list" id="trending-list"></div>
+      </div>
+
+      <!-- Top Writers -->
+      <div class="widget">
+        <div class="widget-title">Top writers</div>
+        <div class="writers-list">
+          <div class="writer-row">
+            <div class="writer-av av-mk" style="width:38px;height:38px;font-size:12px">MK</div>
+            <div class="writer-info"><div class="writer-name">Maya Kim</div><div class="writer-role">Typography specialist</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+          <div class="writer-row">
+            <div class="writer-av av-jr" style="width:38px;height:38px;font-size:12px">JR</div>
+            <div class="writer-info"><div class="writer-name">James Reyes</div><div class="writer-role">Brand designer</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+          <div class="writer-row">
+            <div class="writer-av av-sn" style="width:38px;height:38px;font-size:12px">SN</div>
+            <div class="writer-info"><div class="writer-name">Sara Naomi</div><div class="writer-role">UX researcher</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+          <div class="writer-row">
+            <div class="writer-av av-db" style="width:38px;height:38px;font-size:12px">DB</div>
+            <div class="writer-info"><div class="writer-name">David Burns</div><div class="writer-role">Brand strategist</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="newsletter-widget">
+        <div class="nl-title">The Weekly Brief</div>
+        <div class="nl-desc">Curated design insights, new learning paths, and community picks — every Thursday.</div>
+        <input class="nl-input" type="email" placeholder="your@email.com" id="nl-email">
+        <button class="btn btn-lime btn-full" onclick="subscribeNL()">Subscribe free</button>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="wordmark" onclick="showPage('home')">Studio<em>Ink</em></div>
+          <p class="footer-tagline">A platform for design students and professionals to learn, share, and grow together. Craft-first, always.</p>
+          <div class="footer-social">
+            <button class="social-btn" onclick="toast('Opening Twitter/X…')">𝕏</button>
+            <button class="social-btn" onclick="toast('Opening Instagram…')">◎</button>
+            <button class="social-btn" onclick="toast('Opening LinkedIn…')">in</button>
+            <button class="social-btn" onclick="toast('Opening RSS feed…')">⊛</button>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Learn</h4>
+          <a onclick="showPage('paths')">Learning Paths</a>
+          <a onclick="filterCat('typography')">Typography</a>
+          <a onclick="filterCat('color')">Color Theory</a>
+          <a onclick="filterCat('layout')">Layout &amp; Grid</a>
+          <a onclick="filterCat('ux')">UX &amp; Process</a>
+          <a onclick="toast('Courses coming soon!')">Courses (soon)</a>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <a onclick="toast('Writers directory coming soon')">Writers</a>
+          <a onclick="toast('Portfolio feature coming soon')">Portfolio</a>
+          <a onclick="toast('Events calendar coming soon')">Events</a>
+          <a onclick="showPage('write')">Write for us</a>
+          <a onclick="toast('Opening newsletter…')">Newsletter</a>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <a onclick="toast('About page coming soon')">About StudioInk</a>
+          <a onclick="toast('Advertise page coming soon')">Advertise</a>
+          <a onclick="toast('Opening privacy policy…')">Privacy policy</a>
+          <a onclick="toast('Opening terms…')">Terms of use</a>
+          <a onclick="openModal('contact')">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 StudioInk. Built with craft for designers.</p>
+        <p>Made with ✦ for the design community</p>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /page-home -->
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: ARTICLE
+═══════════════════════════════════════════════════ -->
+<div id="page-article" class="page">
+  <nav class="reader-nav">
+    <div class="reader-nav-inner">
+      <button class="back-btn" onclick="showPage('home')">← All articles</button>
+      <div class="wordmark" onclick="showPage('home')" style="font-size:18px;cursor:pointer">Studio<em style="color:var(--terracotta);font-style:normal">Ink</em></div>
+      <div class="reader-actions" id="reader-actions"></div>
+    </div>
+  </nav>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="article-reader" id="article-reader"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: LEARNING PATHS
+═══════════════════════════════════════════════════ -->
+<div id="page-paths" class="page">
+  <nav id="main-nav" style="background:rgba(250,249,245,0.92);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;backdrop-filter:blur(12px)">
+    <div class="nav-inner">
+      <div class="wordmark" onclick="showPage('home')">Studio<em>Ink</em></div>
+      <div class="nav-divider"></div>
+      <div class="nav-links">
+        <button class="nav-link" onclick="showPage('home')">← Articles</button>
+        <button class="nav-link active">Learning Paths</button>
+      </div>
+      <div class="nav-right">
+        <button class="btn btn-ghost btn-sm" onclick="openModal('login')">Sign in</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('register')">Join free</button>
+      </div>
+    </div>
+  </nav>
+  <div class="paths-hero">
+    <div class="paths-hero-inner">
+      <div class="paths-eyebrow">Structured learning</div>
+      <h1 class="paths-h1">Learning Paths</h1>
+      <p class="paths-lead">Curated sequences of articles designed to take you from foundational concepts to professional mastery. Enroll and track your progress.</p>
+    </div>
+  </div>
+  <div class="paths-grid" id="paths-grid"></div>
+  <footer class="site-footer" style="margin-top:0">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <p>© 2026 StudioInk.</p>
+        <div class="wordmark" onclick="showPage('home')" style="cursor:pointer;color:#fff">Studio<em style="color:var(--lime);font-style:normal">Ink</em></div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: WRITE / CMS
+═══════════════════════════════════════════════════ -->
+<div id="page-write" class="page">
+  <nav style="background:rgba(250,249,245,0.92);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;backdrop-filter:blur(12px)">
+    <div class="nav-inner">
+      <div class="wordmark" onclick="showPage('home')">Studio<em>Ink</em></div>
+      <div class="nav-divider"></div>
+      <div style="flex:1;font-size:13px;color:var(--ink3)">New article — Draft saved</div>
+      <div class="nav-right">
+        <button class="btn btn-ghost btn-sm" onclick="toast('Draft saved!')">Save draft</button>
+        <button class="btn btn-primary btn-sm" onclick="toast('Article submitted for review! Our editors will be in touch.')">Publish</button>
+      </div>
+    </div>
+  </nav>
+  <div class="write-page">
+    <div class="write-header">
+      <input class="write-title-input" type="text" placeholder="Your article title…" id="write-title">
+      <input class="write-subtitle-input" type="text" placeholder="A compelling subtitle that draws readers in…" id="write-subtitle">
+    </div>
+    <div class="write-toolbar">
+      <button class="toolbar-btn" onclick="toast('Bold formatting')"><b>B</b></button>
+      <button class="toolbar-btn" onclick="toast('Italic formatting')"><i>I</i></button>
+      <button class="toolbar-btn" onclick="toast('Underline formatting')"><u>U</u></button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" onclick="toast('Heading 2')">H2</button>
+      <button class="toolbar-btn" onclick="toast('Heading 3')">H3</button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" onclick="toast('Blockquote')">❝</button>
+      <button class="toolbar-btn" onclick="toast('Bullet list')">• List</button>
+      <button class="toolbar-btn" onclick="toast('Numbered list')">1. List</button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" onclick="toast('Insert image')">⊞ Image</button>
+      <button class="toolbar-btn" onclick="toast('Insert callout')">☞ Callout</button>
+      <button class="toolbar-btn" onclick="toast('Insert code block')">{ } Code</button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" onclick="toast('Insert link')">⊕ Link</button>
+    </div>
+    <textarea class="write-body" placeholder="Begin writing your article… Markdown is supported. Use ## for headings, > for blockquotes, **bold**, *italic*."></textarea>
+    <div class="write-sidebar">
+      <h4>Article settings</h4>
+      <div class="meta-field"><label>Category</label>
+        <select><option>Typography</option><option>Layout &amp; Grid</option><option>Color Theory</option><option>UX &amp; Process</option><option>Branding</option><option>Tools</option><option>Process</option></select>
+      </div>
+      <div class="meta-field"><label>Tags (comma separated)</label><input type="text" placeholder="e.g. leading, line-height, readability"></div>
+      <div class="meta-field"><label>SEO title</label><input type="text" placeholder="Optimised title for search engines"></div>
+      <div class="meta-field"><label>Meta description</label><input type="text" placeholder="150–160 character summary…"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="toast('Preview opened in new tab')">Preview</button>
+        <button class="btn btn-primary btn-sm" onclick="toast('Article submitted for review!')">Submit for review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════ -->
+<script>
+/* ─── Helpers ──────────────────────────────────────── */
+const ICONS    = ['✦','◉','▦','◻','◐','◑','⊞','◈'];
+const THUMBS   = ['th-warm','th-cool','th-violet','th-green','th-rose','th-gold'];
+const HEROES   = ['rh-warm','rh-cool','rh-violet','rh-green','rh-rose','rh-gold'];
+const AV_COLS  = ['av-mk','av-jr','av-sn','av-db','av-lw','av-ak'];
+const CAT_META = {
+  typography:{catLabel:'Typography',  badgeCat:'typography', thumb:'th-warm',  icon:'✦', heroClass:'rh-warm'},
+  layout:    {catLabel:'Layout & Grid',badgeCat:'layout',    thumb:'th-cool',  icon:'▦', heroClass:'rh-cool'},
+  color:     {catLabel:'Color Theory', badgeCat:'color',     thumb:'th-violet',icon:'◉', heroClass:'rh-violet'},
+  ux:        {catLabel:'UX & Process', badgeCat:'ux',        thumb:'th-rose',  icon:'◐', heroClass:'rh-rose'},
+  branding:  {catLabel:'Branding',     badgeCat:'branding',  thumb:'th-gold',  icon:'◻', heroClass:'rh-gold'},
+  tools:     {catLabel:'Tools',        badgeCat:'tools',     thumb:'th-green', icon:'⊞', heroClass:'rh-green'},
+  process:   {catLabel:'Process',      badgeCat:'process',   thumb:'th-cool',  icon:'◑', heroClass:'rh-cool'},
+};
+
+// Deterministic index from a string (for consistent icon/colour per author/id)
+function strIdx(s, len) {
+  let h = 0;
+  for (let i = 0; i < String(s).length; i++) h = (h * 31 + String(s).charCodeAt(i)) | 0;
+  return Math.abs(h) % len;
+}
+
+/* ─── Normalise any article (admin or built-in) ───── */
+function normaliseArticle(a) {
+  const cat  = String(a.category || a.cat || 'typography').toLowerCase().trim();
+  const meta = CAT_META[cat] || CAT_META['typography'];
+  const name = String(a.author || 'StudioInk');
+  const initials = name.split(' ').map(w => w[0] || '').join('').toUpperCase().slice(0, 2) || 'SI';
+  const id   = a.id !== undefined ? a.id : Date.now();
+  return {
+    ...a,
+    id,
+    cat,
+    catLabel:  a.catLabel  || meta.catLabel,
+    badgeCat:  a.badgeCat  || meta.badgeCat,
+    thumb:     a.thumb     || meta.thumb,
+    icon:      a.icon      || meta.icon,
+    heroClass: a.heroClass || meta.heroClass,
+    av:        a.av        || initials,
+    avClass:   a.avClass   || AV_COLS[strIdx(name, AV_COLS.length)],
+    authorBio: a.authorBio || name,
+    reads:     Number(a.reads)  || 0,
+    likes:     Number(a.likes)  || 0,
+    comments:  Number(a.comments) || 0,
+    readTime:  a.readTime  || (a.body ? Math.max(1, Math.round(String(a.body).length / 1000)) + ' min' : '5 min'),
+    tags:      Array.isArray(a.tags) ? a.tags : (a.tags ? String(a.tags).split(',').map(t=>t.trim()).filter(Boolean) : []),
+    body:      a.body      || `<p>${a.excerpt || ''}</p>`,
+    excerpt:   a.excerpt   || '',
+    date:      a.date      || new Date().toISOString().slice(0, 10),
+    status:    a.status    || 'published',
+  };
+}
+
+/* ─── Normalise learning path ─────────────────────── */
+const COVERS = ['pc-forest','pc-navy','pc-rose','pc-soil','pc-teal','pc-plum'];
+const BADGES = {beginner:'badge-layout',intermediate:'badge-ux',advanced:'badge-tools','all levels':'badge-color'};
+function normalisePath(p, i) {
+  const level = String(p.level || 'Beginner');
+  return {
+    ...p,
+    cover:    p.cover    || COVERS[i % COVERS.length],
+    badge:    p.badge    || BADGES[level.toLowerCase()] || 'badge-process',
+    icon:     p.icon     || ICONS[i % ICONS.length],
+    hours:    p.hours    || '~' + Math.max(1, Math.round((Number(p.articles) || 5) * 0.35)) ,
+    enrolled: p.enrolled !== undefined ? Number(p.enrolled).toLocaleString() : '0',
+    progress: Number(p.progress) || 0,
+  };
+}
+
+/* ─── Load articles (admin content.js → default) ──── */
+function loadArticles() {
+  if (window.STUDIOINK_CONTENT && Array.isArray(window.STUDIOINK_CONTENT.articles) && window.STUDIOINK_CONTENT.articles.length) {
+    return window.STUDIOINK_CONTENT.articles
+      .filter(a => !a.status || a.status === 'published')
+      .map(normaliseArticle)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+  return DEFAULT_ARTICLES;
+}
+
+function loadPaths() {
+  if (window.STUDIOINK_CONTENT && Array.isArray(window.STUDIOINK_CONTENT.paths) && window.STUDIOINK_CONTENT.paths.length) {
+    return window.STUDIOINK_CONTENT.paths.map(normalisePath);
+  }
+  return DEFAULT_PATHS;
+}
+
+/* ─── Default built-in data ───────────────────────── */
+const DEFAULT_ARTICLES = [
+  {id:0,cat:'typography',catLabel:'Typography',thumb:'th-warm',icon:'✦',heroClass:'rh-warm',
+   title:'The invisible grid: how leading shapes reading',
+   excerpt:'Line spacing is the most powerful and most overlooked typographic tool. Here\'s what the masters knew that we keep forgetting in the age of auto.',
+   av:'MK',avClass:'av-mk',author:'Maya Kim',authorBio:'Typography specialist & design educator',
+   date:'2026-04-04',reads:1240,likes:88,comments:14,readTime:'8 min',
+   tags:['Typography','Leading','Readability'],
+   body:`<h2>The invisible architecture of text</h2>
+<p>Open any design textbook and you'll find chapters on typeface selection, font pairing, and hierarchy. Leading — the space between lines — rarely gets more than a paragraph. Yet leading is the invisible grid that either lets text breathe or chokes it to death.</p>
+<blockquote><p>Good typography is invisible. The reader doesn't notice it — they just find the text easy, even pleasurable, to read.</p></blockquote>
+<h2>What the masters knew</h2>
+<p>Jan Tschichold understood that line height wasn't decoration — it was structure. He prescribed leading as a function of typeface design, measure (line length), and reading distance.</p>
+<ul><li>Body text typically needs 120–145% leading</li><li>Display type can go tighter — even 90% in all-caps settings</li><li>Small text (under 12px) often needs 150% or more</li></ul>
+<h2>Digital degrades leading</h2>
+<p>CSS's <code>line-height: 1.5</code> has become the default across the web — a compromise that works reasonably for nothing and brilliantly for nothing. Leading is a design decision that requires attention to the specific typeface, size, column width, and reading context.</p>`},
+  {id:1,cat:'typography',catLabel:'Typography',thumb:'th-cool',icon:'◑',heroClass:'rh-cool',
+   title:'Hierarchy without size: weight, space, and restraint',
+   excerpt:'Every student reaches for a larger font. Here\'s how professionals do it with subtlety and precision.',
+   av:'MK',avClass:'av-mk',author:'Maya Kim',authorBio:'Typography specialist',
+   date:'2026-04-02',reads:740,likes:64,comments:9,readTime:'6 min',
+   tags:['Typography','Hierarchy','Weight'],
+   body:`<h2>The tyranny of scale</h2>
+<p>When students first learn typographic hierarchy, they reach for the most obvious tool: size. But professional typographers know that hierarchy can be established through weight, spacing, and position alone.</p>
+<blockquote><p>Restraint is not weakness. It is the hardest skill to develop and the clearest signal of mastery.</p></blockquote>
+<h2>Weight as signal</h2>
+<p>A semibold heading at the same size as body text, set above a hairline rule, communicates hierarchy without shouting. The relationship is established through contrast of weight, not scale.</p>`},
+  {id:2,cat:'color',catLabel:'Color Theory',thumb:'th-violet',icon:'◉',heroClass:'rh-violet',
+   title:'Why your color palette keeps failing in production',
+   excerpt:'Palettes that look beautiful in Figma collapse in code. The culprit is almost always context, not color.',
+   av:'JR',avClass:'av-jr',author:'James Reyes',authorBio:'Brand designer & color theorist',
+   date:'2026-03-28',reads:980,likes:112,comments:21,readTime:'10 min',
+   tags:['Color','Production','Figma'],
+   body:`<h2>The context problem</h2>
+<p>You've built a gorgeous palette. Then development starts and everything falls apart. Colors that were harmonious in your design file look flat, muddy, or clashing in the browser.</p>
+<blockquote><p>Color has no meaning in isolation. Every color is changed by everything around it.</p></blockquote>
+<h2>Simultaneous contrast</h2>
+<p>Josef Albers demonstrated that color perception is entirely relational. When you test a palette in a design file, you're testing it against white — the default background of every design tool. But your product has surfaces, images, and user-generated content your palette was never tested for.</p>`},
+  {id:3,cat:'branding',catLabel:'Branding',thumb:'th-gold',icon:'◻',heroClass:'rh-gold',
+   title:'The mark without meaning: why logomarks fail',
+   excerpt:'Clever logomarks are everywhere. Memorable ones are rare. The difference is almost never visual.',
+   av:'JR',avClass:'av-jr',author:'James Reyes',authorBio:'Brand designer',
+   date:'2026-03-25',reads:620,likes:55,comments:7,readTime:'7 min',
+   tags:['Branding','Logo','Identity'],
+   body:`<h2>Cleverness is not meaning</h2>
+<p>Today's design culture has confused clever with meaningful. The dual-meaning logo, the letterform hidden in negative space — these tricks abound, but most are forgotten within a year of launch.</p>
+<blockquote><p>A logo is not a brand. It is a vessel that the brand fills over time.</p></blockquote>
+<h2>What meaning actually is</h2>
+<p>Meaning in a mark isn't encoded in the shape — it accumulates through use. The Nike swoosh meant nothing when it was designed in 1971. It means everything now because of the decades of associations built around it.</p>`},
+  {id:4,cat:'layout',catLabel:'Layout & Grid',thumb:'th-green',icon:'▦',heroClass:'rh-green',
+   title:'Negative space is not empty space',
+   excerpt:'The space between elements is as active as the elements themselves. Learning to design the voids transforms composition.',
+   av:'SN',avClass:'av-sn',author:'Sara Naomi',authorBio:'UX researcher & educator',
+   date:'2026-03-20',reads:820,likes:97,comments:18,readTime:'9 min',
+   tags:['Layout','Composition','Whitespace'],
+   body:`<h2>What fills the gaps</h2>
+<p>Beginning designers fill space. Experienced designers do the opposite: they remove elements until what remains is essential.</p>
+<blockquote><p>In music, the rests are as important as the notes. In design, the space is as active as the form.</p></blockquote>
+<h2>The figure-ground relationship</h2>
+<p>Gestalt psychology gave us the vocabulary: figure and ground. The figure is the object we attend to; the ground is everything else. But ground is not passive — it can become figure, as every optical illusion demonstrates.</p>`},
+  {id:5,cat:'ux',catLabel:'UX & Process',thumb:'th-rose',icon:'◐',heroClass:'rh-rose',
+   title:'Design critique: how to give feedback that builds',
+   excerpt:'Critique is a skill. Most designers were never taught it. Here\'s a framework for making feedback genuinely useful.',
+   av:'SN',avClass:'av-sn',author:'Sara Naomi',authorBio:'UX researcher',
+   date:'2026-03-15',reads:560,likes:73,comments:24,readTime:'7 min',
+   tags:['Process','Critique','Feedback'],
+   body:`<h2>The failure of "I like/I don't like"</h2>
+<p>Most design critique is conducted through preference. This feedback is nearly useless — it tells the designer nothing about why, and it conflates personal taste with design judgment.</p>
+<blockquote><p>Good critique is generous: it assumes the designer made intelligent choices and asks what those choices were trying to achieve.</p></blockquote>
+<h2>A criteria-based framework</h2>
+<p>Effective critique is criteria-based. Before evaluating work, establish what the work is trying to accomplish — the problem it solves, the audience it serves, the constraints it operates within.</p>`},
+];
+
+const DEFAULT_PATHS = [
+  {id:0,name:'Typography Fundamentals',level:'Beginner',  articles:12,enrolled:1840,status:'active',desc:'Master the core principles of type.'},
+  {id:1,name:'Grid Systems Mastery',   level:'Intermediate',articles:9,enrolled:1240,status:'active',desc:'From baseline to modular grids.'},
+  {id:2,name:'Color Theory in Practice',level:'All levels',articles:11,enrolled:2100,status:'active',desc:'How color communicates and fails.'},
+  {id:3,name:'Brand Identity Design',  level:'Intermediate',articles:15,enrolled:980, status:'active',desc:'Build identities that endure.'},
+  {id:4,name:'UX Writing & Hierarchy', level:'Beginner',  articles:8, enrolled:760, status:'active',desc:'Words are design.'},
+  {id:5,name:'Design Systems at Scale',level:'Advanced',  articles:14,enrolled:640, status:'draft', desc:'Token architecture and governance.'},
+].map(normalisePath);
+
+const COMMENTS_DB = {
+  0:[
+    {av:'TL',avClass:'av-lw',name:'Thomas L.',time:'2 hours ago',text:'The x-height point is so underrated. I switched from Georgia to Charter exactly because of this — Charter\'s more modest x-height needed far less leading and felt much airier.',likes:12},
+    {av:'AG',avClass:'av-db',name:'Aisha G.',time:'5 hours ago',text:'Would love to see this extended to screen-specific considerations — optical sizing in variable fonts changes the leading equation significantly.',likes:8},
+  ],
+  2:[
+    {av:'JH',avClass:'av-mk',name:'Jonas H.',time:'4 hours ago',text:'The "tested against white" observation is exactly what happened to us. Our palette looked beautiful in Figma and completely flat in the browser.',likes:18},
+  ],
+};
+
+/* ─── Live data ───────────────────────────────────── */
+let ARTICLES = loadArticles();
+let PATHS    = loadPaths();
+
+/* ─── State ───────────────────────────────────────── */
+let likedSet      = new Set();
+let savedSet      = new Set();
+let followingSet  = new Set();
+let activeFilter  = 'all';
+let currentId     = null;
+let toastTimer    = null;
+
+/* ─── Toast ───────────────────────────────────────── */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ─── Page routing ────────────────────────────────── */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (name === 'home')   { ARTICLES = loadArticles(); PATHS = loadPaths(); renderFeed(getFiltered()); }
+  if (name === 'paths')  renderPaths();
+}
+
+/* ─── Article filtering ───────────────────────────── */
+function getFiltered(cat) {
+  const c = cat !== undefined ? cat : activeFilter;
+  if (c === 'all') return [...ARTICLES];
+  return ARTICLES.filter(a => a.cat === c || a.catLabel.toLowerCase().includes(c));
+}
+
+function renderFeed(list) {
+  const container = document.getElementById('article-list');
+  if (!container) return;
+
+  if (!list.length) {
+    container.innerHTML = '<div style="padding:48px 0;text-align:center;color:var(--ink3);font-size:15px">No articles found for this topic yet.</div>';
+  } else {
+    container.innerHTML = list.map(a => `
+      <div class="article-card" onclick="openArticle('${a.id}')">
+        <div class="art-thumb ${a.thumb}">${a.icon}</div>
+        <div>
+          <div class="art-meta-top">
+            <span class="badge badge-${a.cat}">${a.catLabel}</span>
+            <span class="art-date">${a.date}</span>
+            <span class="art-date">· ${a.readTime} read</span>
+          </div>
+          <div class="art-title">${a.title}</div>
+          <div class="art-excerpt">${a.excerpt}</div>
+          <div class="art-footer">
+            <div class="author-chip">
+              <div class="av ${a.avClass}">${a.av}</div>
+              <span class="author-name">${a.author}</span>
+              <span class="art-reads">· ${Number(a.reads).toLocaleString()} reads</span>
+            </div>
+            <div class="art-actions" onclick="event.stopPropagation()">
+              <button class="act-btn ${likedSet.has(a.id)?'liked':''}" onclick="toggleLike('${a.id}',this)">♡ ${Number(a.likes)+(likedSet.has(a.id)?1:0)}</button>
+              <button class="act-btn" onclick="handleShare('${a.id}')">↗ Share</button>
+              <button class="act-btn" onclick="handleSave('${a.id}',this)">⊕ ${savedSet.has(a.id)?'Saved':'Save'}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Trending sidebar
+  const trending = [...ARTICLES].sort((a,b) => Number(b.reads)-Number(a.reads)).slice(0,5);
+  const tl = document.getElementById('trending-list');
+  if (tl) tl.innerHTML = trending.map((a,i) => `
+    <div class="trend-item">
+      <span class="trend-n">0${i+1}</span>
+      <div>
+        <div class="trend-title" onclick="openArticle('${a.id}')">${a.title}</div>
+        <div class="trend-meta">${Number(a.reads).toLocaleString()} reads · ${a.catLabel}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Keep old name as alias so any leftover calls still work
+function renderArticles(list) { renderFeed(list || getFiltered()); }
+
+function filterTab(cat, el) {
+  activeFilter = cat;
+  document.querySelectorAll('.topic-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const h = document.getElementById('feed-heading');
+  if (h) h.textContent = cat === 'all' ? 'Latest articles' : (CAT_META[cat]?.catLabel || cat) + ' articles';
+  const fb = document.getElementById('featured-banner');
+  if (fb) fb.style.display = cat === 'all' ? '' : 'none';
+  renderFeed(getFiltered(cat));
+}
+
+function filterCat(cat) {
+  activeFilter = cat;   // set BEFORE showPage so renderFeed uses it
+  showPage('home');
+  // Sync tab highlight
+  document.querySelectorAll('.topic-tab').forEach(t => {
+    const oc = t.getAttribute('onclick') || '';
+    t.classList.toggle('active', oc.includes("'"+cat+"'") || (cat==='all' && oc.includes("'all'")));
+  });
+  const h = document.getElementById('feed-heading');
+  if (h) h.textContent = cat === 'all' ? 'Latest articles' : (CAT_META[cat]?.catLabel || cat) + ' articles';
+  const fb = document.getElementById('featured-banner');
+  if (fb) fb.style.display = cat === 'all' ? '' : 'none';
+}
+
+function filterPill(el, cat) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  filterTab(cat);
+}
+
+function sortArticles(val) {
+  let list = getFiltered();
+  if (val === 'popular') list.sort((a,b) => Number(b.reads)-Number(a.reads));
+  else if (val === 'liked') list.sort((a,b) => Number(b.likes)-Number(a.likes));
+  renderFeed(list);
+}
+
+/* ─── Article reader ──────────────────────────────── */
+function openArticle(id) {
+  // Support both numeric and string/timestamp IDs
+  const a = ARTICLES.find(x => String(x.id) === String(id));
+  if (!a) { toast('Article not found'); return; }
+  currentId = a.id;
+
+  const storedComments = COMMENTS_DB[id] || COMMENTS_DB[Number(id)] || [];
+  const commentsHTML = storedComments.map(c => `
+    <div class="comment-item">
+      <div class="av ${c.avClass}" style="width:38px;height:38px;font-size:11px">${c.av}</div>
+      <div class="comment-bubble">
+        <div class="comment-meta"><span class="comment-author">${c.name}</span><span class="comment-time">· ${c.time}</span></div>
+        <div class="comment-text">${c.text}</div>
+        <div class="comment-acts">
+          <button class="comment-act" onclick="toast('Liked!')">♡ ${c.likes}</button>
+          <button class="comment-act" onclick="toast('Reply coming soon')">Reply</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const safeId = String(a.id).replace(/[^a-zA-Z0-9_-]/g, '_');
+
+  document.getElementById('article-reader').innerHTML = `
+    <div class="reader-category">${a.catLabel}</div>
+    <h1 class="reader-title">${a.title}</h1>
+    <div class="reader-author-bar">
+      <div class="av ${a.avClass}" style="width:44px;height:44px;font-size:14px">${a.av}</div>
+      <div class="reader-author-info">
+        <div class="reader-author-name">${a.author}</div>
+        <div class="reader-author-bio">${a.authorBio} · ${a.date} · ${Number(a.reads).toLocaleString()} reads · ${a.readTime} read</div>
+      </div>
+    </div>
+    <div class="reader-hero ${a.heroClass}">${a.icon}</div>
+    <div class="article-body">${a.body}</div>
+    <div class="article-tags">
+      ${a.tags.map(t=>`<span class="badge badge-${a.cat}">${t}</span>`).join('')}
+    </div>
+    <div class="article-reactions">
+      <button class="react-btn ${likedSet.has(a.id)?'active':''}" id="react-like-${safeId}" onclick="readerLike('${a.id}')">♡ ${Number(a.likes)+(likedSet.has(a.id)?1:0)} likes</button>
+      <button class="react-btn" onclick="handleSave('${a.id}')">⊕ ${savedSet.has(a.id)?'Saved':'Save'}</button>
+      <button class="react-btn" onclick="handleShare('${a.id}')">↗ Share</button>
+    </div>
+    <div class="comments-section">
+      <div class="comments-heading">Discussion (${a.comments})</div>
+      <div class="comment-form">
+        <textarea placeholder="Share your thoughts, questions, or perspective…" id="cf-${safeId}"></textarea>
+        <div class="cf-actions">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('cf-${safeId}').value=''">Cancel</button>
+          <button class="btn btn-primary btn-sm" onclick="postComment('${safeId}')">Post comment</button>
+        </div>
+      </div>
+      <div class="comments-list" id="comments-list-${safeId}">${commentsHTML}</div>
+    </div>
+  `;
+
+  document.getElementById('reader-actions').innerHTML = `
+    <button class="reader-share-btn" onclick="handleShare('${a.id}')">Copy link</button>
+    <button class="reader-share-btn" onclick="toast('Shared to Twitter/X')">Share</button>
+    <button class="btn btn-primary btn-sm" onclick="openModal('register')">Follow author</button>
+  `;
+
+  // Update hero featured card link
+  const featuredCard = document.getElementById('featured-banner');
+  if (featuredCard) featuredCard.setAttribute('onclick', `openArticle('${ARTICLES[0]?.id}')`);
+
+  showPage('article');
+  setupReadingProgress();
+}
+
+function setupReadingProgress() {
+  const fill = document.getElementById('progress-fill');
+  if (!fill) return;
+  function update() {
+    const total = document.body.scrollHeight - window.innerHeight;
+    const pct = total > 0 ? Math.min(100, Math.round((window.scrollY / total) * 100)) : 0;
+    fill.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+}
+
+function readerLike(id) {
+  const a = ARTICLES.find(x => String(x.id) === String(id));
+  if (!a) return;
+  if (likedSet.has(a.id)) likedSet.delete(a.id); else { likedSet.add(a.id); toast('Added to your liked articles'); }
+  const safeId = String(a.id).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const btn = document.getElementById('react-like-' + safeId);
+  if (btn) { btn.textContent = `♡ ${Number(a.likes)+(likedSet.has(a.id)?1:0)} likes`; btn.classList.toggle('active', likedSet.has(a.id)); }
+}
+
+function postComment(safeId) {
+  const ta = document.getElementById('cf-' + safeId);
+  if (!ta || !ta.value.trim()) { toast('Write something first'); return; }
+  const list = document.getElementById('comments-list-' + safeId);
+  const div = document.createElement('div');
+  div.className = 'comment-item animate-in';
+  div.innerHTML = `
+    <div class="av av-lw" style="width:38px;height:38px;font-size:11px;background:#c8f0d8;color:#0a4a1a">You</div>
+    <div class="comment-bubble">
+      <div class="comment-meta"><span class="comment-author">You</span><span class="comment-time">· Just now</span></div>
+      <div class="comment-text">${ta.value}</div>
+      <div class="comment-acts"><button class="comment-act">♡ 0</button><button class="comment-act">Reply</button></div>
+    </div>
+  `;
+  list.prepend(div);
+  ta.value = '';
+  toast('Comment posted! 💬');
+}
+
+/* ─── Interactions ────────────────────────────────── */
+function toggleLike(id, btn) {
+  const a = ARTICLES.find(x => String(x.id) === String(id));
+  if (!a) return;
+  if (likedSet.has(a.id)) { likedSet.delete(a.id); btn.classList.remove('liked'); }
+  else { likedSet.add(a.id); btn.classList.add('liked'); toast('Liked ♡'); }
+  btn.textContent = `♡ ${Number(a.likes)+(likedSet.has(a.id)?1:0)}`;
+}
+
+function handleShare(id) {
+  const a = ARTICLES.find(x => String(x.id) === String(id));
+  if (!a) return;
+  if (navigator.clipboard) navigator.clipboard.writeText(window.location.href).catch(()=>{});
+  toast(`Link copied: "${a.title.substring(0,42)}…"`);
+}
+
+function handleSave(id, btn) {
+  const sid = String(id);
+  savedSet.has(sid) ? savedSet.delete(sid) : savedSet.add(sid);
+  toast(savedSet.has(sid) ? 'Saved to your reading list ⊕' : 'Removed from saved');
+  if (btn) btn.textContent = `⊕ ${savedSet.has(sid)?'Saved':'Save'}`;
+}
+
+function toggleFollow(btn) {
+  const following = btn.classList.contains('following');
+  btn.classList.toggle('following');
+  btn.textContent = following ? 'Follow' : 'Following';
+  toast(following ? 'Unfollowed' : 'Following! New articles will appear in your feed.');
+}
+
+/* ─── Learning paths ──────────────────────────────── */
+function renderPaths() {
+  const grid = document.getElementById('paths-grid');
+  if (!grid) return;
+  const paths = PATHS.filter(p => !p.status || p.status === 'active' || p.status === 'draft');
+  grid.innerHTML = paths.map((p, i) => `
+    <div class="path-card" onclick="toast('Sign in to enrol and track progress on this path')">
+      <div class="path-cover ${p.cover}">${p.icon}</div>
+      <div class="path-body">
+        <span class="badge ${p.badge} path-level">${p.level}</span>
+        <div class="path-name">${p.name}</div>
+        <div class="path-desc">${p.desc}</div>
+        <div class="path-stats">
+          <span>${p.articles} articles</span>
+          <span>${p.hours} hours</span>
+          <span>${Number(p.enrolled).toLocaleString ? Number(String(p.enrolled).replace(/,/g,'')).toLocaleString() : p.enrolled} enrolled</span>
+        </div>
+        <div class="lp-bar"><div class="lp-fill" style="width:${p.progress}%"></div></div>
+        <div style="margin-top:14px">
+          <button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openModal('register')">
+            ${p.progress>0?'Continue path →':'Start path →'}
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('') + `
+    <div class="path-coming" onclick="toast('More paths coming — Motion, Editorial, Portfolio')">
+      <div class="path-coming-icon">+</div>
+      <p>More paths coming</p>
+      <small>Motion · Editorial · Portfolio</small>
+    </div>
+  `;
+}
+
+/* ─── Search ──────────────────────────────────────── */
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('search-big-input').focus(), 50);
+}
+function closeSearch() { document.getElementById('search-overlay').classList.remove('open'); }
+function closeSearchIfBg(e) { if (e.target === document.getElementById('search-overlay')) closeSearch(); }
+
+function runSearch(val, sidebarMode) {
+  if (sidebarMode) { openSearch(); document.getElementById('search-big-input').value = val; }
+  const container = document.getElementById('search-results');
+  if (!container) return;
+  if (!val.trim()) { container.innerHTML = '<div class="search-empty">Start typing to search articles</div>'; return; }
+  const q = val.toLowerCase();
+  const results = ARTICLES.filter(a =>
+    a.title.toLowerCase().includes(q) ||
+    a.excerpt.toLowerCase().includes(q) ||
+    a.catLabel.toLowerCase().includes(q) ||
+    a.author.toLowerCase().includes(q)
+  );
+  if (!results.length) { container.innerHTML = `<div class="search-empty">No results for "${val}"</div>`; return; }
+  container.innerHTML = results.map(a => `
+    <div class="search-result-item" onclick="closeSearch();openArticle('${a.id}')">
+      <div class="sr-icon">${a.icon}</div>
+      <div>
+        <div class="sr-title">${a.title}</div>
+        <div class="sr-meta">${a.catLabel} · ${a.author} · ${Number(a.reads).toLocaleString()} reads</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSearch(); closeModal(); } });
+
+/* ─── Auth modal ──────────────────────────────────── */
+const LOGIN_HTML = `
+  <div class="modal-title">Welcome back</div>
+  <div class="modal-sub">Sign in to track your learning and access bookmarks.</div>
+  <div class="form-field"><label>Email address</label><input type="email" placeholder="you@example.com" autocomplete="email"></div>
+  <div class="form-field"><label>Password</label><input type="password" placeholder="••••••••" autocomplete="current-password"></div>
+  <div style="text-align:right;margin-bottom:18px"><a onclick="toast('Password reset email sent!')" style="font-size:13px;color:var(--terracotta);cursor:pointer">Forgot password?</a></div>
+  <button class="btn btn-primary btn-full btn-lg" onclick="toast('Signed in! Welcome back ✦');closeModal()">Sign in</button>
+  <div class="modal-divider">or</div>
+  <button class="btn btn-ghost btn-full" onclick="toast('Google auth integration coming soon')">Continue with Google</button>
+  <div class="switch-text">No account yet? <a onclick="openModal('register')">Join StudioInk free →</a></div>
+`;
+const REGISTER_HTML = `
+  <div class="modal-title">Join StudioInk</div>
+  <div class="modal-sub">Free access to articles, learning paths, and the design community.</div>
+  <div class="form-field"><label>Full name</label><input type="text" placeholder="Your name" autocomplete="name"></div>
+  <div class="form-field"><label>Email address</label><input type="email" placeholder="you@example.com" autocomplete="email"></div>
+  <div class="form-field"><label>Password</label><input type="password" placeholder="Create a strong password" autocomplete="new-password"></div>
+  <button class="btn btn-primary btn-full btn-lg" onclick="toast('Account created! Welcome to StudioInk ✦');closeModal()">Create free account</button>
+  <div class="modal-divider">or</div>
+  <button class="btn btn-ghost btn-full" onclick="toast('Google auth integration coming soon')">Continue with Google</button>
+  <div style="font-size:12px;color:var(--ink3);text-align:center;margin-top:14px;line-height:1.5">By joining you agree to our <a onclick="toast('Opening terms…')" style="color:var(--terracotta);cursor:pointer">Terms</a> and <a onclick="toast('Opening privacy policy…')" style="color:var(--terracotta);cursor:pointer">Privacy Policy</a></div>
+  <div class="switch-text">Already a member? <a onclick="openModal('login')">Sign in</a></div>
+`;
+const CONTACT_HTML = `
+  <div class="modal-title">Get in touch</div>
+  <div class="modal-sub">Editorial, partnerships, or general enquiries.</div>
+  <div class="form-field"><label>Your name</label><input type="text" placeholder="Full name"></div>
+  <div class="form-field"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+  <div class="form-field"><label>Message</label><input type="text" placeholder="What can we help with?"></div>
+  <button class="btn btn-primary btn-full" onclick="toast('Message sent! We\'ll be in touch soon.');closeModal()">Send message</button>
+`;
+
+function openModal(type) {
+  const body = document.getElementById('modal-body');
+  if (type === 'login') body.innerHTML = LOGIN_HTML;
+  else if (type === 'register') body.innerHTML = REGISTER_HTML;
+  else if (type === 'contact') body.innerHTML = CONTACT_HTML;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalIfBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+/* ─── Newsletter ──────────────────────────────────── */
+function subscribeNL() {
+  const email = document.getElementById('nl-email');
+  if (!email || !email.value.trim()) { toast('Enter your email first'); return; }
+  toast('Subscribed! Welcome to The Weekly Brief ✦');
+  email.value = '';
+}
+
+/* ─── Hero card — point to first article dynamically ─ */
+function initHeroCard() {
+  const card = document.querySelector('.hero-card');
+  if (!card || !ARTICLES.length) return;
+  const first = ARTICLES[0];
+  card.onclick = () => openArticle(first.id);
+  const titleEl = card.querySelector('.hc-title');
+  const topicEl = card.querySelector('.hc-topic');
+  const metaEl  = card.querySelector('.hc-meta');
+  if (titleEl) titleEl.textContent = first.title;
+  if (topicEl) topicEl.textContent = first.catLabel + ' · ' + first.readTime + ' read';
+  if (metaEl)  metaEl.innerHTML = `<div class="hc-avatar">${first.av}</div><span>${first.author}</span><span>·</span><span>${Number(first.reads).toLocaleString()} reads</span>`;
+  // Also update featured banner onclick
+  const banner = document.getElementById('featured-banner');
+  if (banner) banner.onclick = () => openArticle(first.id);
+}
+
+/* ─── Init ────────────────────────────────────────── */
+renderFeed(ARTICLES);
+initHeroCard();
+</script>
+</body>
+</html>
