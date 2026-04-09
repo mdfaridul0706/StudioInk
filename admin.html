@@ -304,6 +304,34 @@ tr:hover td{background:var(--surface2)}
   .dash-grid{grid-template-columns:1fr}
   .analytics-grid{grid-template-columns:1fr}
 }
+
+/* ── Quill editor overrides ─────────────────────── */
+.ql-toolbar.ql-snow{background:var(--surface2);border:none!important;border-bottom:1px solid var(--border)!important;padding:10px 14px;flex-wrap:wrap}
+.ql-container.ql-snow{border:none!important;background:transparent}
+.ql-editor{min-height:400px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);line-height:1.8;padding:20px}
+.ql-editor.ql-blank::before{color:var(--ink3);font-style:normal}
+.ql-snow .ql-stroke{stroke:var(--ink2)}
+.ql-snow .ql-fill{fill:var(--ink2)}
+.ql-snow .ql-picker{color:var(--ink2)}
+.ql-snow .ql-picker-options{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r6)}
+.ql-snow .ql-picker-item:hover,.ql-snow .ql-picker-item.ql-selected{color:var(--accent)}
+.ql-snow button:hover .ql-stroke,.ql-snow button.ql-active .ql-stroke{stroke:var(--accent)!important}
+.ql-snow button:hover .ql-fill,.ql-snow button.ql-active .ql-fill{fill:var(--accent)!important}
+.ql-snow .ql-picker-label:hover,.ql-snow .ql-picker-label.ql-active{color:var(--accent)!important}
+.ql-snow .ql-tooltip{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r6);color:var(--ink);box-shadow:var(--shadow)}
+.ql-snow .ql-tooltip input[type=text]{background:var(--bg);border:1px solid var(--border);color:var(--ink);border-radius:var(--r4)}
+.ql-editor h1,.ql-editor h2,.ql-editor h3{font-family:'Playfair Display',serif;font-weight:700;line-height:1.25}
+.ql-editor h1{font-size:28px;margin-bottom:12px}
+.ql-editor h2{font-size:22px;margin-bottom:10px}
+.ql-editor h3{font-size:18px;margin-bottom:8px}
+.ql-editor blockquote{border-left:3px solid var(--accent);padding:4px 16px;margin:16px 0;color:var(--ink2);font-style:italic}
+.ql-editor img{max-width:100%;border-radius:var(--r8);margin:12px 0}
+.ql-editor pre{background:var(--surface2);border-radius:var(--r6);padding:12px 16px;font-size:13px}
+.hero-img-preview{width:100%;height:160px;object-fit:cover;border-radius:var(--r8);margin-top:8px;display:block}
+.hero-img-placeholder{width:100%;height:120px;background:var(--surface2);border:2px dashed var(--border);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;margin-top:8px;transition:all 0.15s}
+.hero-img-placeholder:hover{border-color:var(--accent);background:var(--surface3)}
+.hero-img-placeholder span{font-size:28px;opacity:0.4}
+.hero-img-placeholder p{font-size:12px;color:var(--ink3)}
 </style>
 </head>
 <body>
@@ -698,40 +726,27 @@ function renderEditor(){
   document.getElementById('topbar-title').textContent = a ? 'Edit Article' : 'New Article';
   const status = a?a.status:'draft';
   const tags = a&&a.tags?a.tags:[];
+  articleTags = [...tags];
 
   document.getElementById('topbar-right').innerHTML = `
     <span class="text-muted" id="save-indicator">Unsaved</span>
     <button class="tb-btn tb-btn-ghost" onclick="saveEditorDraft()">Save draft</button>
-    <button class="tb-btn tb-btn-green" onclick="saveEditorPublish()">Publish</button>
+    <button class="tb-btn tb-btn-green" onclick="saveEditorPublish()">Publish ✦</button>
   `;
+
+  const heroImg = a&&a.heroImg ? a.heroImg : '';
 
   document.getElementById('page-content').innerHTML = `
     <div class="editor-wrap">
       <div class="editor-main">
-        <div class="editor-toolbar">
-          <button class="e-btn" title="Bold"><b>B</b></button>
-          <button class="e-btn" title="Italic"><i>I</i></button>
-          <button class="e-btn" title="Underline"><u>U</u></button>
-          <div class="e-sep"></div>
-          <button class="e-btn" onclick="insertMd('## ')">H2</button>
-          <button class="e-btn" onclick="insertMd('### ')">H3</button>
-          <div class="e-sep"></div>
-          <button class="e-btn" onclick="insertMd('> ')">❝ Quote</button>
-          <button class="e-btn" onclick="insertMd('- ')">• List</button>
-          <button class="e-btn" onclick="insertMd('1. ')">1. List</button>
-          <div class="e-sep"></div>
-          <button class="e-btn" onclick="insertMd('\`code\`')">{ } Code</button>
-          <button class="e-btn" onclick="insertMd('[Link text](url)')">⊕ Link</button>
-          <div class="e-sep"></div>
-          <button class="e-btn" onclick="toast('Image upload — connect to a CDN for production')">⊞ Image</button>
-        </div>
         <input class="title-input" id="ed-title" type="text" placeholder="Article title…" value="${a?escHtml(a.title):''}" oninput="updateSeoPreview()">
-        <textarea class="excerpt-input" id="ed-excerpt" placeholder="Short excerpt — shown in article cards and search results…" rows="2">${a?escHtml(a.excerpt):''}</textarea>
-        <textarea class="body-input" id="ed-body" placeholder="Write your article here… Markdown supported.&#10;&#10;## Heading 2&#10;> Blockquote&#10;**Bold**, *Italic*, \`code\`" oninput="updateCharCount()">${a?escHtml(a.body):''}</textarea>
-        <div class="char-count" id="char-count">0 characters · ~0 min read</div>
+        <textarea class="excerpt-input" id="ed-excerpt" placeholder="Short excerpt — shown in article cards and search results (1–2 sentences)…" rows="2">${a?escHtml(a.excerpt):''}</textarea>
+        <div id="quill-editor"></div>
+        <div class="char-count" id="char-count">0 words · ~0 min read</div>
       </div>
+
       <div class="editor-sidebar">
-        <!-- Publish panel -->
+        <!-- Publish -->
         <div class="es-panel">
           <div class="es-title">Publish</div>
           <div style="margin-bottom:12px">${statusPill(status)}</div>
@@ -748,6 +763,26 @@ function renderEditor(){
             <button class="tb-btn tb-btn-green" style="width:100%" onclick="saveEditorPublish()">Publish article ✦</button>
           </div>
         </div>
+
+        <!-- Hero image -->
+        <div class="es-panel">
+          <div class="es-title">Hero image</div>
+          <div class="es-field">
+            <label>Image URL or paste base64</label>
+            <input type="text" id="ed-hero-url" placeholder="https://…" value="${escHtml(heroImg)}" oninput="previewHeroImg(this.value)">
+          </div>
+          <div style="text-align:center;margin:8px 0;font-size:11px;color:var(--ink3)">— or —</div>
+          <label style="display:block;background:var(--surface2);border:2px dashed var(--border);border-radius:var(--r8);padding:16px;text-align:center;cursor:pointer;transition:all 0.15s" id="hero-upload-label" onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor='var(--border)'">
+            <span style="font-size:24px;display:block;margin-bottom:6px;opacity:0.5">⊞</span>
+            <span style="font-size:12px;color:var(--ink3)">Click to upload image</span>
+            <input type="file" id="ed-hero-file" accept="image/*" style="display:none" onchange="handleHeroUpload(this)">
+          </label>
+          <div id="hero-img-preview-wrap" style="margin-top:10px;${heroImg?'':'display:none'}">
+            <img id="hero-img-preview" src="${escHtml(heroImg)}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--r8)">
+            <button onclick="clearHeroImg()" style="font-size:11px;color:var(--red-light);background:none;border:none;cursor:pointer;margin-top:6px;padding:0">✕ Remove image</button>
+          </div>
+        </div>
+
         <!-- Categorisation -->
         <div class="es-panel">
           <div class="es-title">Categorisation</div>
@@ -757,7 +792,7 @@ function renderEditor(){
             </select>
           </div>
           <div class="es-field"><label>Tags — press Enter to add</label>
-            <input type="text" id="ed-tag-input" placeholder="e.g. leading" onkeydown="addTag(event)">
+            <input type="text" id="ed-tag-input" placeholder="e.g. typography, grid" onkeydown="addTag(event)">
             <div class="tags-wrap" id="tags-wrap">
               ${tags.map(t=>`<span class="tag-chip">${t}<button class="tag-x" onclick="removeTag('${t}')">×</button></span>`).join('')}
             </div>
@@ -766,128 +801,259 @@ function renderEditor(){
             <input type="number" id="ed-readtime" value="${a?parseInt(a.readTime||'5'):5}" min="1">
           </div>
         </div>
+
         <!-- SEO -->
         <div class="es-panel">
           <div class="es-title">SEO</div>
           <div class="seo-score">
-            <div class="seo-bar"><div class="seo-fill" id="seo-fill" style="width:72%;background:var(--amber-light)"></div></div>
-            <span class="seo-label seo-med" id="seo-label">Good</span>
+            <div class="seo-bar"><div class="seo-fill" id="seo-fill" style="width:0%;background:var(--red-light)"></div></div>
+            <span class="seo-label seo-bad" id="seo-label">Not set</span>
           </div>
-          <div class="es-field"><label>SEO title <span style="color:var(--ink3);font-weight:400">(50–60 chars)</span></label>
-            <input type="text" id="ed-seo-title" placeholder="Optimised search title…" value="${a?escHtml(a.seoTitle||''):''}" oninput="updateSeoPreview()">
+          <div class="es-field"><label>SEO title <span style="color:var(--ink3);font-weight:400">(50–60 chars ideal)</span></label>
+            <input type="text" id="ed-seo-title" placeholder="Optimised title for search…" value="${a?escHtml(a.seoTitle||''):''}" oninput="updateSeoPreview()">
             <div id="seo-title-count" style="font-size:10px;color:var(--ink3);margin-top:3px">0 / 60</div>
           </div>
-          <div class="es-field"><label>Meta description <span style="color:var(--ink3);font-weight:400">(150–160 chars)</span></label>
-            <textarea id="ed-seo-desc" placeholder="Compelling description for search results…" rows="2" oninput="updateSeoPreview()">${a?escHtml(a.seoDesc||''):''}</textarea>
+          <div class="es-field"><label>Meta description <span style="color:var(--ink3);font-weight:400">(150–160 chars ideal)</span></label>
+            <textarea id="ed-seo-desc" placeholder="Compelling description for search results…" rows="3" oninput="updateSeoPreview()">${a?escHtml(a.seoDesc||''):''}</textarea>
             <div id="seo-desc-count" style="font-size:10px;color:var(--ink3);margin-top:3px">0 / 160</div>
           </div>
           <div style="background:var(--bg);border-radius:var(--r6);padding:12px;margin-top:8px">
-            <div style="font-size:11px;color:var(--ink3);margin-bottom:6px">Google preview</div>
-            <div id="seo-preview-title" style="font-size:13px;color:#4a9ade;margin-bottom:3px">StudioInk — Article title</div>
-            <div style="font-size:11px;color:var(--green-light);margin-bottom:3px">studioink.design/articles/…</div>
-            <div id="seo-preview-desc" style="font-size:11px;color:var(--ink3);line-height:1.4">Meta description appears here…</div>
+            <div style="font-size:10px;color:var(--ink3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Google preview</div>
+            <div id="seo-preview-title" style="font-size:14px;color:#4a9ade;margin-bottom:2px;font-weight:500">Article title</div>
+            <div style="font-size:11px;color:#3a7a3a;margin-bottom:4px">studioink.design/articles/…</div>
+            <div id="seo-preview-desc" style="font-size:12px;color:var(--ink3);line-height:1.5">Meta description appears here…</div>
           </div>
         </div>
       </div>
     </div>
   `;
-  updateCharCount();
+
+  // Init Quill after DOM is ready
+  initQuill(a ? a.body : '');
   updateSeoPreview();
 }
 
-function insertMd(md){
-  const ta=document.getElementById('ed-body'); if(!ta) return;
-  const s=ta.selectionStart, e=ta.selectionEnd;
-  ta.value=ta.value.slice(0,s)+md+ta.value.slice(e);
-  ta.focus(); ta.selectionStart=ta.selectionEnd=s+md.length;
-  updateCharCount();
+/* ── Quill initialisation ────────────────────────── */
+let quillInstance = null;
+
+function initQuill(content) {
+  // Load Quill CSS if not already loaded
+  if (!document.getElementById('quill-css')) {
+    const link = document.createElement('link');
+    link.id   = 'quill-css';
+    link.rel  = 'stylesheet';
+    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css';
+    document.head.appendChild(link);
+  }
+
+  const loadAndInit = () => {
+    quillInstance = new Quill('#quill-editor', {
+      theme: 'snow',
+      placeholder: 'Write your article here… Paste content from Word, Google Docs, or any website and formatting is preserved.',
+      modules: {
+        toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          [{ 'font': [] }],
+          [{ 'size': ['small', false, 'large', 'huge'] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'align': [] }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          [{ 'indent': '-1' }, { 'indent': '+1' }],
+          ['blockquote', 'code-block'],
+          ['link', 'image'],
+          ['clean']
+        ],
+        clipboard: { matchVisual: false }
+      }
+    });
+
+    // Set existing content if editing
+    if (content) {
+      quillInstance.root.innerHTML = content;
+    }
+
+    // Update word count on change
+    quillInstance.on('text-change', updateWordCount);
+    updateWordCount();
+
+    // Handle image insertion via toolbar button
+    const toolbar = quillInstance.getModule('toolbar');
+    toolbar.addHandler('image', handleQuillImage);
+  };
+
+  // Load Quill JS if not already loaded
+  if (typeof Quill !== 'undefined') {
+    loadAndInit();
+  } else {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js';
+    script.onload = loadAndInit;
+    document.head.appendChild(script);
+  }
 }
 
-function updateCharCount(){
-  const ta=document.getElementById('ed-body'); if(!ta) return;
-  const len=ta.value.length, mins=Math.max(1,Math.round(len/1000));
-  const el=document.getElementById('char-count');
-  if(el) el.textContent=`${len.toLocaleString()} characters · ~${mins} min read`;
+function updateWordCount() {
+  if (!quillInstance) return;
+  const text = quillInstance.getText().trim();
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  const mins  = Math.max(1, Math.round(words / 200));
+  const el = document.getElementById('char-count');
+  if (el) el.textContent = `${words.toLocaleString()} words · ~${mins} min read`;
 }
 
+/* ── Image handling ──────────────────────────────── */
+function handleQuillImage() {
+  // Create a hidden file input and trigger it
+  const input = document.createElement('input');
+  input.type   = 'file';
+  input.accept = 'image/*';
+  input.onchange = () => {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast('Image too large — max 2MB for inline images', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const range = quillInstance.getSelection(true);
+      quillInstance.insertEmbed(range.index, 'image', e.target.result);
+      quillInstance.setSelection(range.index + 1);
+      toast('Image inserted ✦');
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function handleHeroUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 3 * 1024 * 1024) {
+    toast('Image too large — max 3MB for hero images', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('ed-hero-url').value = e.target.result;
+    previewHeroImg(e.target.result);
+    toast('Hero image uploaded ✦');
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewHeroImg(src) {
+  const wrap = document.getElementById('hero-img-preview-wrap');
+  const img  = document.getElementById('hero-img-preview');
+  if (!wrap || !img) return;
+  if (src && src.trim()) {
+    img.src = src;
+    wrap.style.display = 'block';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function clearHeroImg() {
+  const url = document.getElementById('ed-hero-url');
+  const file = document.getElementById('ed-hero-file');
+  if (url)  url.value = '';
+  if (file) file.value = '';
+  previewHeroImg('');
+}
+
+/* ── SEO preview ─────────────────────────────────── */
 function updateSeoPreview(){
-  const titleEl=document.getElementById('ed-seo-title');
-  const descEl=document.getElementById('ed-seo-desc');
-  const mainTitle=document.getElementById('ed-title');
-  if(!titleEl) return;
-  const title=titleEl.value||mainTitle?.value||'Article title';
-  const desc=descEl?.value||'Meta description appears here…';
-  const tc=document.getElementById('seo-title-count');
-  const dc=document.getElementById('seo-desc-count');
-  if(tc) tc.textContent=`${titleEl.value.length} / 60`;
-  if(dc) dc.textContent=`${descEl?.value.length||0} / 160`;
-  const pt=document.getElementById('seo-preview-title');
-  const pd=document.getElementById('seo-preview-desc');
-  if(pt) pt.textContent=title;
-  if(pd) pd.textContent=desc;
-  const score = (title.length>10?30:0)+(title.length<61?20:0)+(desc.length>80?30:0)+(desc.length<161?20:0);
-  const fill=document.getElementById('seo-fill');
-  const label=document.getElementById('seo-label');
-  if(fill&&label){
-    fill.style.width=score+'%';
-    if(score>=80){fill.style.background='var(--green-light)';label.textContent='Excellent';label.className='seo-label seo-good';}
-    else if(score>=50){fill.style.background='var(--amber-light)';label.textContent='Good';label.className='seo-label seo-med';}
+  const titleEl = document.getElementById('ed-seo-title');
+  const descEl  = document.getElementById('ed-seo-desc');
+  const mainTitle = document.getElementById('ed-title');
+  if (!titleEl) return;
+  const title = titleEl.value || mainTitle?.value || 'Article title';
+  const desc  = descEl?.value || 'Meta description appears here…';
+  const tc = document.getElementById('seo-title-count');
+  const dc = document.getElementById('seo-desc-count');
+  if (tc) tc.textContent = `${titleEl.value.length} / 60`;
+  if (dc) dc.textContent = `${descEl?.value.length||0} / 160`;
+  const pt = document.getElementById('seo-preview-title');
+  const pd = document.getElementById('seo-preview-desc');
+  if (pt) pt.textContent = title;
+  if (pd) pd.textContent = desc;
+  const score = (titleEl.value.length>10?30:0)+(titleEl.value.length<61?20:0)+(descEl?.value.length>80?30:0)+((descEl?.value.length||0)<161?20:0);
+  const fill  = document.getElementById('seo-fill');
+  const label = document.getElementById('seo-label');
+  if (fill && label) {
+    fill.style.width = score + '%';
+    if (score>=80){fill.style.background='var(--green-light)';label.textContent='Excellent';label.className='seo-label seo-good';}
+    else if (score>=50){fill.style.background='var(--amber-light)';label.textContent='Good';label.className='seo-label seo-med';}
     else{fill.style.background='var(--red-light)';label.textContent='Needs work';label.className='seo-label seo-bad';}
   }
 }
 
-let articleTags=[];
+/* ── Tags ────────────────────────────────────────── */
+let articleTags = [];
 function addTag(e){
-  if(e.key!=='Enter') return;
-  const inp=document.getElementById('ed-tag-input'); if(!inp||!inp.value.trim()) return;
-  articleTags=[...articleTags,inp.value.trim()]; inp.value='';
-  const wrap=document.getElementById('tags-wrap');
-  if(wrap) wrap.innerHTML=articleTags.map(t=>`<span class="tag-chip">${t}<button class="tag-x" onclick="removeTag('${t}')">×</button></span>`).join('');
+  if (e.key !== 'Enter') return;
+  const inp = document.getElementById('ed-tag-input');
+  if (!inp || !inp.value.trim()) return;
+  const newTags = inp.value.split(',').map(t=>t.trim()).filter(Boolean);
+  articleTags = [...new Set([...articleTags, ...newTags])];
+  inp.value = '';
+  renderTags();
 }
 function removeTag(t){
-  articleTags=articleTags.filter(x=>x!==t);
-  const wrap=document.getElementById('tags-wrap');
-  if(wrap) wrap.innerHTML=articleTags.map(t=>`<span class="tag-chip">${t}<button class="tag-x" onclick="removeTag('${t}')">×</button></span>`).join('');
+  articleTags = articleTags.filter(x => x !== t);
+  renderTags();
+}
+function renderTags(){
+  const wrap = document.getElementById('tags-wrap');
+  if (wrap) wrap.innerHTML = articleTags.map(t=>`<span class="tag-chip">${escHtml(t)}<button class="tag-x" onclick="removeTag('${escHtml(t)}')">×</button></span>`).join('');
 }
 
+/* ── Get editor data ─────────────────────────────── */
 function getEditorData(status){
+  const body = quillInstance ? quillInstance.root.innerHTML : '';
   return {
-    id:editingArticleId!==null?editingArticleId:Date.now(),
-    title:document.getElementById('ed-title')?.value||'Untitled',
-    excerpt:document.getElementById('ed-excerpt')?.value||'',
-    body:document.getElementById('ed-body')?.value||'',
-    category:document.getElementById('ed-cat')?.value||'typography',
-    author:document.getElementById('ed-author')?.value||'Admin',
-    date:document.getElementById('ed-date')?.value||new Date().toISOString().slice(0,10),
-    status, reads:0, likes:0, comments:0,
-    tags:articleTags,
-    seoTitle:document.getElementById('ed-seo-title')?.value||'',
-    seoDesc:document.getElementById('ed-seo-desc')?.value||'',
-    readTime:(document.getElementById('ed-readtime')?.value||'5')+' min',
+    id:       editingArticleId!==null ? editingArticleId : Date.now(),
+    title:    document.getElementById('ed-title')?.value || 'Untitled',
+    excerpt:  document.getElementById('ed-excerpt')?.value || '',
+    body,
+    heroImg:  document.getElementById('ed-hero-url')?.value || '',
+    category: document.getElementById('ed-cat')?.value || 'typography',
+    author:   document.getElementById('ed-author')?.value || 'Admin',
+    date:     document.getElementById('ed-date')?.value || new Date().toISOString().slice(0,10),
+    status,
+    reads: 0, likes: 0, comments: 0,
+    tags:     articleTags,
+    seoTitle: document.getElementById('ed-seo-title')?.value || '',
+    seoDesc:  document.getElementById('ed-seo-desc')?.value || '',
+    readTime: (document.getElementById('ed-readtime')?.value || '5') + ' min',
   };
 }
 
+/* ── Save / Publish ──────────────────────────────── */
 function saveEditorDraft(){
-  const data=getEditorData('draft');
-  if(editingArticleId!==null){
-    const idx=ARTICLES.findIndex(x=>x.id===editingArticleId);
-    if(idx>=0) ARTICLES[idx]={...ARTICLES[idx],...data};
-  } else { ARTICLES.unshift(data); editingArticleId=data.id; }
-  saveData('articles',ARTICLES);
-  document.getElementById('save-indicator').textContent='Saved ✓';
-  document.getElementById('badge-articles').textContent=ARTICLES.length;
+  const data = getEditorData('draft');
+  if (editingArticleId!==null){
+    const idx = ARTICLES.findIndex(x=>x.id===editingArticleId);
+    if (idx>=0) ARTICLES[idx] = {...ARTICLES[idx], ...data};
+  } else { ARTICLES.unshift(data); editingArticleId = data.id; }
+  saveData('articles', ARTICLES);
+  const ind = document.getElementById('save-indicator');
+  if (ind) ind.textContent = 'Saved ✓';
+  document.getElementById('badge-articles').textContent = ARTICLES.length;
   toast('Draft saved');
 }
 
 function saveEditorPublish(){
-  const data=getEditorData('published');
-  if(!data.title.trim()||data.title==='Untitled'){ toast('Add a title first','error'); return; }
-  if(editingArticleId!==null){
-    const idx=ARTICLES.findIndex(x=>x.id===editingArticleId);
-    if(idx>=0) ARTICLES[idx]={...ARTICLES[idx],...data};
-  } else { ARTICLES.unshift(data); editingArticleId=data.id; }
-  saveData('articles',ARTICLES);
-  document.getElementById('badge-articles').textContent=ARTICLES.length;
+  const data = getEditorData('published');
+  if (!data.title.trim() || data.title==='Untitled'){ toast('Add a title first','error'); return; }
+  if (editingArticleId!==null){
+    const idx = ARTICLES.findIndex(x=>x.id===editingArticleId);
+    if (idx>=0) ARTICLES[idx] = {...ARTICLES[idx], ...data};
+  } else { ARTICLES.unshift(data); editingArticleId = data.id; }
+  saveData('articles', ARTICLES);
+  document.getElementById('badge-articles').textContent = ARTICLES.length;
   navTo('articles');
   setTimeout(()=>{ exportContentJS(true); }, 400);
 }
