@@ -1822,8 +1822,43 @@ document.addEventListener('keydown', e => {
 /* ─── Init ────────────────────────────────────────── */
 renderFeed(ARTICLES);
 initHeroCard();
-// Set initial history state so back button from article goes back to home
-history.replaceState({ page: 'home', articleId: null }, '', window.location.pathname + window.location.search);
+
+/* ── Restore page from URL hash on load/refresh ────────────────────────
+   If the URL is  #article-123  → open that article
+   If the URL is  #paths        → show learning paths
+   If the URL is  # or empty    → stay on home
+   This means refreshing the page always returns you to the same view,
+   and sharing a URL takes the recipient directly to the right content.
+──────────────────────────────────────────────────────────────────────── */
+(function restorePageFromHash() {
+  const hash = window.location.hash;           // e.g. "#article-1712345"
+  if (!hash || hash === '#') {
+    // Home — just set the initial state so back button works
+    history.replaceState({ page: 'home', articleId: null }, '', window.location.pathname);
+    return;
+  }
+  if (hash === '#paths') {
+    showPage('paths', null, false);
+    history.replaceState({ page: 'paths', articleId: null }, '', hash);
+    return;
+  }
+  if (hash.startsWith('#article-')) {
+    const id = hash.slice('#article-'.length);
+    // Try numeric first, then string (timestamp IDs)
+    const numId = Number(id);
+    const article = ARTICLES.find(a => String(a.id) === id || a.id === numId);
+    if (article) {
+      openArticle(article.id, false);
+      history.replaceState({ page: 'article', articleId: article.id }, '', hash);
+    } else {
+      // Article not found (maybe deleted) — fall back to home
+      history.replaceState({ page: 'home', articleId: null }, '', window.location.pathname);
+    }
+    return;
+  }
+  // Unknown hash — stay on home
+  history.replaceState({ page: 'home', articleId: null }, '', window.location.pathname);
+})();
 </script>
 </body>
 </html>
